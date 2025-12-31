@@ -1,5 +1,5 @@
 import json
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 from config import config
 from scanner import scan_website
 from context import adjust_severity
@@ -228,6 +228,17 @@ def task_status(task_id):
             'status': task.info.get('status', '') if task.info else '',
             'result': task.info.get('result', {}) if task.state == 'SUCCESS' else None
         }
+        # PRIVACY FEATURE:
+        # If successfully finished, save this Scan ID to the user's session cookie
+        if task.state == 'SUCCESS':
+            result = task.info.get('result', {})
+            scan_id = result.get('scan_id')
+            if scan_id:
+                my_scans = session.get('my_scans', [])
+                if scan_id not in my_scans:
+                    my_scans.append(scan_id)
+                    session['my_scans'] = my_scans
+                    session.modified = True
     else:
         # something went wrong in the background job
         response = {
@@ -241,7 +252,14 @@ def task_status(task_id):
 # -----------------------------
 @app.route("/history")
 def history():
-    scans = Scan.query.order_by(Scan.created_at.desc()).all()
+    # PRIVACY FEATURE: Only show scans belonging to this browser session
+    my_ids = session.get('my_scans', [])
+    
+    if not my_ids:
+        scans = []
+    else:
+        # Filter: ID must be in my_ids list
+        scans = Scan.query.filter(Scan.id.in_(my_ids)).order_by(Scan.created_at.desc()).all()
     
     # Convert ORM objects to dicts for template
     scans_data = [s.to_dict() for s in scans]
