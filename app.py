@@ -18,6 +18,16 @@ from celery import Celery
 
 app = Flask(__name__)
 app.config.from_object(config)
+
+# FORCE LOAD: Ensure Celery Broker is set (Render Fix)
+import os
+if not app.config.get('CELERY_BROKER_URL'):
+    redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+    app.config['CELERY_BROKER_URL'] = redis_url
+    app.config['CELERY_RESULT_BACKEND'] = redis_url
+    print(f"🔧 Manual Config Override: Broker set to {redis_url}")
+else:
+    print(f"✅ Config Loaded: Broker is {app.config['CELERY_BROKER_URL']}")
 db.init_app(app)
 csrf = CSRFProtect(app)
 swagger = Swagger(app)
