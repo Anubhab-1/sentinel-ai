@@ -355,8 +355,13 @@ def clean_pdf_text(text):
     except:
         return ""
 
+import sys
+
 @app.route("/download/<int:scan_id>")
 def download_pdf(scan_id):
+    # Increase recursion depth just for this complex PDF generation
+    sys.setrecursionlimit(2000)
+    
     try:
         scan = Scan.query.get(scan_id)
 
@@ -379,7 +384,9 @@ def download_pdf(scan_id):
         pdf.set_text_color(50, 50, 50)
         pdf.cell(20, 10, "Target:", 0, 0)
         pdf.set_font("Arial", "", 12)
-        pdf.cell(0, 10, clean_pdf_text(scan_dict['url']), 0, 1)
+        
+        # Use MultiCell for URL to prevent page break loops on long strings
+        pdf.multi_cell(0, 10, clean_pdf_text(scan_dict['url']))
         
         pdf.set_font("Arial", "B", 12)
         pdf.cell(20, 10, "Date:", 0, 0)
