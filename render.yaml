@@ -4,7 +4,7 @@ services:
     name: sentinel-ai
     env: docker
     plan: free
-    startCommand: ./start.sh
+
     envVars:
       - key: FLASK_ENV
         value: production

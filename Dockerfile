@@ -35,4 +35,4 @@ ENV PORT=5002
 
 # Run command (Production Server)
 # Binding to 0.0.0.0 is required for Docker containers
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5002", "--timeout", "300", "app:app"]
+CMD ["./start.sh"]
