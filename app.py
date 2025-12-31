@@ -373,7 +373,7 @@ def download_pdf(scan_id):
 
         # Initialize Custom PDF
         pdf = PDFReport()
-        pdf.set_auto_page_break(auto=True, margin=15)
+        pdf.set_auto_page_break(auto=True, margin=25)
         pdf.add_page()
         
         # --- Executive Summary Section ---
@@ -425,6 +425,13 @@ def download_pdf(scan_id):
 
         # --- Findings Table ---
         for f in findings:
+            # MANUAL PAGE BREAK CHECK
+            # If we are close to bottom (A4 height is 297mm), add page
+            # This prevents infinite loops and layout corruption
+            if pdf.get_y() > 250:
+                pdf.add_page()
+                pdf.set_xy(10, 45) # Reset to below header
+
             # Card Background
             pdf.set_fill_color(255, 255, 255)
             pdf.set_draw_color(230, 230, 230)
