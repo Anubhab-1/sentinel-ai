@@ -342,6 +342,7 @@ class PDFReport(FPDF):
         
         self.ln(15)
 
+    def footer(self):
         self.set_y(-15)
         self.set_font('Arial', 'I', 8)
         self.set_text_color(128)
