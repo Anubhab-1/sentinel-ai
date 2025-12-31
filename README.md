@@ -1,4 +1,5 @@
 # 🛡️ Sentinel AI - Next-Gen Security Scanner
+> **Developed by NexusLabs™**
 
 **Sentinel AI** is an enterprise-grade automated security auditing platform designed to detect, analyze, and explain web vulnerabilities in real-time. Built with a scalable microservices architecture, it leverages AI to provide context-aware remediation strategies.
 
