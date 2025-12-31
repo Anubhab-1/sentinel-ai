@@ -14,7 +14,7 @@ from flask_wtf.csrf import CSRFProtect, generate_csrf
 from database import db, init_db, Scan, AuditLog
 from flasgger import Swagger
 
-from celery import Celery
+from celery_app import celery
 
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -38,28 +38,7 @@ csrf = CSRFProtect(app)
 swagger = Swagger(app)
 
 # Initialize Celery
-def make_celery(app):
-    celery = Celery(
-        app.import_name,
-        backend=app.config['CELERY_RESULT_BACKEND'],
-        broker=app.config['CELERY_BROKER_URL']
-    )
-    celery.conf.update(app.config)
-    
-    class ContextTask(celery.Task):
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return self.run(*args, **kwargs)
-
-    celery.Task = ContextTask
-    return celery
-
-# -----------------------------
-# Celery Configuration
-# -----------------------------
-# Celery configuration is now loaded via config.from_object(config)
-
-celery = make_celery(app)
+# Celery is initialized in celery_app.py
 
 from tasks import scan_task # Import after celery initialization
 

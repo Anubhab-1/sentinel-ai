@@ -1,4 +1,4 @@
-from celery import shared_task
+from celery_app import celery
 import asyncio
 from scanner import scan_website
 from context import adjust_severity
@@ -16,7 +16,7 @@ def calculate_risk(findings):
         score += weights.get(f["severity"], 0)
     return min(score, 100)
 
-@shared_task(bind=True)
+@celery.task(bind=True)
 def scan_task(self, url):
     """
     Background Task to scan the website.
