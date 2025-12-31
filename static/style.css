@@ -468,3 +468,23 @@ a:hover {
     font-size: 24px;
   }
 }
+
+/* LOGO RESPONSIVENESS */
+.logo {
+  height: 50px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .logo {
+    height: 35px;
+    /* Smaller on mobile to fit nicely */
+    border-radius: 8px;
+  }
+}
