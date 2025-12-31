@@ -280,6 +280,58 @@ a:hover {
   color: #e2e8f0;
 }
 
+/* HISTORY BUTTON (Header) */
+.history-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.history-btn:hover {
+  background: white;
+  color: var(--bg-dark);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* CARD ACTIONS */
+.btn-secondary,
+.btn-accent {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.2s;
+  text-align: center;
+}
+
+.btn-secondary {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--primary);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-accent {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.btn-accent:hover {
+  background: #10b981;
+  color: white;
+}
+
 /* LOADER */
 .loader {
   margin-top: 50px;

@@ -15,7 +15,7 @@
     <div class="container">
         <header>
             <h1>🛡️ Sentinel-AI <span>Security Dashboard</span></h1>
-            <a href="{{ url_for('history') }}">History</a>
+            <a href="{{ url_for('history') }}" class="history-btn">📜 History</a>
         </header>
 
         <div class="scan-box">
@@ -139,7 +139,16 @@
 
         function renderResults(data) {
             // Update Stats
-            document.getElementById("scoreVal").innerText = data.risk_score + "/100";
+            // Render Score with Label
+            let riskLabel = "Secure";
+            let color = "var(--low)";
+            if (data.risk_score > 60) { riskLabel = "Critical Risk"; color = "var(--high)"; }
+            else if (data.risk_score > 30) { riskLabel = "Moderate Risk"; color = "var(--medium)"; }
+
+            document.getElementById("scoreVal").innerHTML = `
+                <span style="color:${color}">${data.risk_score}/100</span>
+                <div style="font-size:14px; color:${color}; margin-top:5px; text-transform:uppercase; letter-spacing:1px;">${riskLabel}</div>
+            `;
             document.getElementById("confScore").innerText = data.confidence_score || 0;
             document.getElementById("confLevel").innerText = data.confidence_level || "Low";
 
