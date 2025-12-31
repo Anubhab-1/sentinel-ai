@@ -338,14 +338,14 @@ class PDFReport(FPDF):
         # Subtitle
         self.set_font('Arial', '', 10)
         self.set_text_color(200, 200, 200)
-        self.cell(0, 5, 'Advanced Security Scanner & Audit Tool | NexusLabs™', 0, 1, 'L', fill=False)
+        self.cell(0, 5, 'Advanced Security Scanner & Audit Tool | NexusLabs(TM)', 0, 1, 'L', fill=False)
         
         self.ln(15)
 
         self.set_y(-15)
         self.set_font('Arial', 'I', 8)
         self.set_text_color(128)
-        self.cell(0, 10, f'Page {self.page_no()} | NexusLabs™ Security', 0, 0, 'C')
+        self.cell(0, 10, f'Page {self.page_no()} | NexusLabs(TM) Security', 0, 0, 'C')
 
 @app.route("/download/<int:scan_id>")
 def download_pdf(scan_id):
