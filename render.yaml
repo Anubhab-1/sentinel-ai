@@ -1,0 +1,25 @@
+services:
+  # 1. The Web Service (Runs Flask + Celery Worker together for Free Tier)
+  - type: web
+    name: sentinel-ai
+    env: docker
+    plan: free
+    startCommand: ./start.sh
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: sentinel-redis
+          property: connectionString
+      - key: PORT
+        value: 5002
+
+  # 2. Redis (Free Tier)
+  - type: redis
+    name: sentinel-redis
+    plan: free
+    ipAllowList: [] # Access only from internal services

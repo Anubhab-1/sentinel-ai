@@ -39,9 +39,10 @@ def make_celery(app):
     celery.Task = ContextTask
     return celery
 
-# Add Celery config to Config object if not present
-app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
-app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+# -----------------------------
+# Celery Configuration
+# -----------------------------
+# Celery configuration is now loaded via config.from_object(config)
 
 celery = make_celery(app)
 

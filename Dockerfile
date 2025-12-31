@@ -19,6 +19,9 @@ RUN pip install --default-timeout=100 --no-cache-dir -r requirements.txt
 # Copy the rest of the app code
 COPY . .
 
+# Make startup script executable
+RUN chmod +x start.sh
+
 # Create directory for SQLite DB if it doesn't exist
 RUN mkdir -p /app/data
 
