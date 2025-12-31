@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  sentinel:
+    build: .
+    container_name: sentinel_app
+    ports:
+      - "5002:5002"
+    environment:
+      - FLASK_DEBUG=false
+      - SECRET_KEY=prod-secret-key-change-this
+      - RATE_LIMIT=10 per minute
+      - MAX_REDIRECTS=5
+      - ENABLE_PORT_SCAN=true
+      - PERPLEXITY_API_KEY=${PERPLEXITY_API_KEY}
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  worker:
+    build: .
+    container_name: sentinel_worker
+    command: celery -A celery_worker.celery worker --loglevel=info
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - PERPLEXITY_API_KEY=${PERPLEXITY_API_KEY}
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  redis:
+    image: "redis:alpine"
+    container_name: sentinel_redis
+    ports:
+      - "6379:6379"

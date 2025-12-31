@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scan History | Sentinel-AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>📜 Scan History</h1>
+        <a href="{{ url_for('index') }}">← Back to Scanner</a>
+    </header>
+
+    <div class="card" style="margin-bottom: 30px; background: #111827;">
+        <h3 style="margin-bottom: 20px;">Risk Trend Analysis</h3>
+        <canvas id="riskChart" style="max-height: 200px;"></canvas>
+    </div>
+
+    {% if scans %}
+        <div class="history-list">
+            {% for scan in scans %}
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>{{ scan["url"] }}</h3>
+                    <span class="badge {{ 'high' if scan['risk_score'] > 40 else 'low' }}">
+                        Score: {{ scan["risk_score"] }}/100
+                    </span>
+                </div>
+
+                <small>Date: {{ scan["created_at"] }}</small>
+
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <a href="{{ url_for('compare', url=scan['url']) }}" class="btn-secondary">
+                        🔍 Compare
+                    </a>
+                    
+                    <a href="{{ url_for('download_pdf', scan_id=scan['id']) }}" class="btn-accent">
+                        📄 Download PDF
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card" style="text-align: center; padding: 40px;">
+            <p>No scans found. Start by scanning a website!</p>
+            <a href="{{ url_for('index') }}">Go to Scanner</a>
+        </div>
+    {% endif %}
+</div>
+
+<script id="chart-data" type="application/json">
+{
+    "labels": {{ labels | safe }},
+    "scores": {{ scores | safe }}
+}
+</script>
+
+<script>
+    const ctx = document.getElementById("riskChart").getContext("2d");
+
+    // Parsing the JSON data passed from app.py
+    const chartData = JSON.parse(
+        document.getElementById("chart-data").textContent
+    );
+
+    const labels = chartData.labels;
+    const dataPoints = chartData.scores;
+
+    new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Risk Score",
+                data: dataPoints,
+                borderColor: "#38bdf8",
+                backgroundColor: "rgba(56, 189, 248, 0.1)",
+                borderWidth: 3,
+                tension: 0.3,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: { color: "#9ca3af" },
+                    grid: { color: "#1f2937" }
+                },
+                x: {
+                    ticks: { color: "#9ca3af" },
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sentinel-AI Security Dashboard</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/script.js" defer></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🛡️ Sentinel-AI <span>Security Dashboard</span></h1>
+            <a href="{{ url_for('history') }}">History</a>
+        </header>
+
+        <div class="scan-box">
+            <form id="scanForm" class="scan-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <input type="url" id="urlInput" name="url" placeholder="https://example.com" required>
+                <button type="submit" id="scanBtn">Start Scan</button>
+            </form>
+        </div>
+
+        <div id="loader" class="loader hidden">
+            <div class="spinner"></div>
+            <p>Analyzing security headers & vulnerability posture...</p>
+        </div>
+
+        <div id="resultsArea" class="hidden">
+
+            <div class="stats">
+                <div class="stat">
+                    <h3>Risk Score</h3>
+                    <p id="scoreVal">0/100</p>
+                </div>
+
+                <div class="stat">
+                    <h3>Confidence</h3>
+                    <p><span id="confScore">0</span>% (<span id="confLevel">Low</span>)</p>
+                </div>
+
+                <div class="stat">
+                    <h3>Risks</h3>
+                    <p>
+                        <span id="highCount" style="color: var(--high)">0</span> High /
+                        <span id="medCount" style="color: var(--medium)">0</span> Med /
+                        <span id="lowCount" style="color: var(--low)">0</span> Low
+                    </p>
+                </div>
+            </div>
+
+            <div id="findingsList"></div>
+
+        </div>
+    </div>
+
+    <script>
+        // Polling Logic for Celery Task
+        document.getElementById("scanForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const url = document.getElementById("urlInput").value;
+            const btn = document.getElementById("scanBtn");
+            const loader = document.getElementById("loader");
+            const results = document.getElementById("resultsArea");
+            const list = document.getElementById("findingsList");
+            const statusText = document.querySelector("#loader p");
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // UI Loading State
+            btn.disabled = true;
+            btn.innerText = "Scanning...";
+            loader.classList.remove("hidden");
+            results.classList.add("hidden");
+            list.innerHTML = "";
+            statusText.innerText = "Starting Scan...";
+
+            try {
+                // 1. Trigger Task
+                const response = await fetch("/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrfToken
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+
+                if (!response.ok) throw new Error("Server Error");
+                const data = await response.json();
+
+                if (data.error) throw new Error(data.error);
+
+                // 2. Poll for Status
+                const taskId = data.task_id;
+                pollStatus(taskId);
+
+            } catch (err) {
+                alert(err.message);
+                resetUI();
+            }
+        });
+
+        function pollStatus(taskId) {
+            const statusText = document.querySelector("#loader p");
+
+            const interval = setInterval(async () => {
+                const res = await fetch(`/status/${taskId}`);
+                const data = await res.json();
+
+                if (data.state === 'SUCCESS') {
+                    clearInterval(interval);
+                    renderResults(data.result);
+                    resetUI();
+                } else if (data.state === 'FAILURE') {
+                    clearInterval(interval);
+                    alert("Scan Failed: " + data.status);
+                    resetUI();
+                } else {
+                    // Update Loading Text
+                    statusText.innerText = data.status || "Processing...";
+                }
+            }, 2000);
+        }
+
+        function resetUI() {
+            document.getElementById("scanBtn").disabled = false;
+            document.getElementById("scanBtn").innerText = "Start Scan";
+            document.getElementById("loader").classList.add("hidden");
+        }
+
+        function renderResults(data) {
+            // Update Stats
+            document.getElementById("scoreVal").innerText = data.risk_score + "/100";
+            document.getElementById("confScore").innerText = data.confidence_score || 0;
+            document.getElementById("confLevel").innerText = data.confidence_level || "Low";
+
+            document.getElementById("highCount").innerText = data.summary.High;
+            document.getElementById("medCount").innerText = data.summary.Medium;
+            document.getElementById("lowCount").innerText = data.summary.Low;
+
+            const list = document.getElementById("findingsList");
+            list.innerHTML = "";
+
+            // Render Findings Cards
+            data.findings.forEach((f, index) => {
+                const div = document.createElement("div");
+                div.className = `card ${f.severity.toLowerCase()}`;
+
+                div.innerHTML = `
+            <h4>${f.issue}</h4>
+            <p><b>Severity:</b> ${f.severity}</p>
+            <p><b>Why it matters:</b></p>
+            
+            <div id="explanation-${index}" class="explanation"></div>
+            
+            <button 
+                class="explain-btn" 
+                onclick='handleExplain(this)' 
+                data-index="${index}" 
+                data-issue='${JSON.stringify(f.issue)}' 
+                data-severity='${JSON.stringify(f.severity)}' 
+                data-reasons='${JSON.stringify(f.reasons)}'>
+                🤖 Explain with AI
+            </button>
+
+            <p style="margin-top:15px">
+                <b>How to fix:</b><br>
+                ${f.recommendation || "Check OWASP guidelines."}
+            </p>
+        `;
+                list.appendChild(div);
+            });
+
+            document.getElementById("resultsArea").classList.remove("hidden");
+        }
+
+        // Reuse your AI Explain logic
+        function handleExplain(button) {
+            const index = button.dataset.index;
+            const issue = JSON.parse(button.dataset.issue);
+            const severity = JSON.parse(button.dataset.severity);
+            const reasons = JSON.parse(button.dataset.reasons);
+            const box = document.getElementById(`explanation-${index}`);
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            if (box.dataset.loading === "true") return;
+            box.dataset.loading = "true";
+            box.innerText = "Generating explanation...";
+
+            fetch("/explain", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                body: JSON.stringify({ issue, severity, reasons })
+            })
+                .then(async res => {
+                    if (!res.ok) {
+                        const text = await res.text();
+                        throw new Error(`Error ${res.status}: ${text.slice(0, 100)}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    box.innerText = data.explanation;
+                    box.dataset.loading = "false";
+                })
+                .catch(err => {
+                    console.error(err);
+                    box.innerText = `⚠️ Failed: ${err.message}`;
+                    box.dataset.loading = "false";
+                });
+        }
+    </script>
+
+</body>
+
+</html>

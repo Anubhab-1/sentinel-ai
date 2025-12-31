@@ -1,0 +1,17 @@
+flask[async]
+requests
+beautifulsoup4
+fpdf
+aiohttp
+flask-limiter
+gunicorn
+
+flask-wtf
+pytest
+python-dotenv
+flask-sqlalchemy
+psycopg2-binary
+flasgger
+pytest-cov
+celery
+redis

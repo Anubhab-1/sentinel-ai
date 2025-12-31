@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error - Sentinel-AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .error-box {
+            text-align: center;
+            padding: 50px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,68,68,0.2);
+            max-width: 600px;
+            margin: 100px auto;
+        }
+        h1 { color: #ef4444; font-size: 48px; margin-bottom: 20px; }
+        p { font-size: 18px; color: #cbd5e1; margin-bottom: 30px; }
+        .home-btn {
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-box">
+            <h1>{{ error_code }}</h1>
+            <p>{{ error_message }}</p>
+            <a href="/" class="home-btn">Return to Safety</a>
+        </div>
+    </div>
+</body>
+</html>

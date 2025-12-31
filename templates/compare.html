@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scan Comparison | Sentinel-AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🔍 Scan Comparison</h1>
+        <a href="/history">← Back to History</a>
+    </header>
+
+    <div class="card">
+        <h3>Target: {{ url }}</h3>
+    </div>
+
+    <div class="stats">
+        <div class="stat">
+            <h3>Previous Risk</h3>
+            <p>{{ previous['risk_score'] }}/100</p>
+            <small>{{ previous['created_at'] }}</small>
+        </div>
+
+        <div class="stat">
+            <h3>Latest Risk</h3>
+            <p>{{ latest['risk_score'] }}/100</p>
+            <small>{{ latest['created_at'] }}</small>
+        </div>
+
+        <div class="stat">
+            <h3>Score Change</h3>
+            <p style="font-size: 24px;">
+                {% if diff > 0 %}
+                    🔴 +{{ diff }} (Worsened)
+                {% elif diff < 0 %}
+                    🟢 {{ diff }} (Improved)
+                {% else %}
+                    ⚪ No Change
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
