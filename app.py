@@ -347,6 +347,13 @@ class PDFReport(FPDF):
         self.set_text_color(128)
         self.cell(0, 10, f'Page {self.page_no()} | RakshaNetra(TM) Security', 0, 0, 'C')
 
+def clean_pdf_text(text):
+    """Sanitize text for FPDF (Latin-1 only)"""
+    try:
+        return str(text).encode('latin-1', 'replace').decode('latin-1')
+    except:
+        return ""
+
 @app.route("/download/<int:scan_id>")
 def download_pdf(scan_id):
     scan = Scan.query.get(scan_id)
@@ -370,7 +377,7 @@ def download_pdf(scan_id):
     pdf.set_text_color(50, 50, 50)
     pdf.cell(20, 10, "Target:", 0, 0)
     pdf.set_font("Arial", "", 12)
-    pdf.cell(0, 10, scan_dict['url'], 0, 1)
+    pdf.cell(0, 10, clean_pdf_text(scan_dict['url']), 0, 1)
     
     pdf.set_font("Arial", "B", 12)
     pdf.cell(20, 10, "Date:", 0, 0)
@@ -441,7 +448,7 @@ def download_pdf(scan_id):
         pdf.set_xy(40, start_y)
         pdf.set_font("Arial", "B", 11)
         pdf.set_text_color(10, 25, 47)
-        pdf.cell(0, 8, f['issue'], 0, 1)
+        pdf.cell(0, 8, clean_pdf_text(f['issue']), 0, 1)
         
         # Divider
         pdf.ln(2)
@@ -450,7 +457,7 @@ def download_pdf(scan_id):
         pdf.set_font("Arial", "", 10)
         pdf.set_text_color(60, 60, 60)
         rec_text = f"Fix: {f.get('recommendation', 'Check OWASP guidelines')}"
-        pdf.multi_cell(0, 6, rec_text)
+        pdf.multi_cell(0, 6, clean_pdf_text(rec_text))
         
         # Reference Link
         if f.get('reference_url'):
