@@ -348,138 +348,138 @@ class PDFReport(FPDF):
         self.cell(0, 10, f'Page {self.page_no()} | RakshaNetra(TM) Security', 0, 0, 'C')
 
 def clean_pdf_text(text):
-    """Sanitize text for FPDF (Latin-1 only)"""
+    """Sanitize text for FPDF (Strict ASCII only)"""
     try:
-        return str(text).encode('latin-1', 'replace').decode('latin-1')
+        # Normalize to closest ASCII equivalent, strip everything else
+        return str(text).encode('ascii', 'ignore').decode('ascii')
     except:
         return ""
 
 @app.route("/download/<int:scan_id>")
 def download_pdf(scan_id):
-    scan = Scan.query.get(scan_id)
-
-    if not scan:
-        return "Scan not found", 404
-    
-    scan_dict = scan.to_dict()
-    findings = scan_dict['findings']
-
-    # Initialize Custom PDF
-    pdf = PDFReport()
-    pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.add_page()
-    
-    # --- Executive Summary Section ---
-    pdf.set_xy(10, 45)
-    
-    # Target Info
-    pdf.set_font("Arial", "B", 12)
-    pdf.set_text_color(50, 50, 50)
-    pdf.cell(20, 10, "Target:", 0, 0)
-    pdf.set_font("Arial", "", 12)
-    pdf.cell(0, 10, clean_pdf_text(scan_dict['url']), 0, 1)
-    
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(20, 10, "Date:", 0, 0)
-    pdf.set_font("Arial", "", 12)
-    pdf.cell(0, 10, str(scan_dict['created_at']), 0, 1)
-    
-    pdf.ln(5)
-
-    # Score Card
-    pdf.set_fill_color(240, 248, 255) # AliceBlue
-    pdf.set_draw_color(200, 200, 200)
-    pdf.rect(10, pdf.get_y(), 190, 25, 'DF')
-    
-    pdf.set_xy(15, pdf.get_y() + 7)
-    pdf.set_font("Arial", "B", 16)
-    pdf.set_text_color(10, 25, 47)
-    pdf.cell(50, 10, f"Risk Score: {scan_dict['risk_score']}/100", 0, 0)
-    
-    # Determine Status
-    score = scan_dict['risk_score']
-    status = "SECURE" if score < 30 else "VULNERABLE" if score > 70 else "AT RISK"
-    color = (22, 163, 74) if score < 30 else (220, 38, 38) if score > 70 else (217, 119, 6)
-    
-    pdf.set_text_color(*color)
-    pdf.cell(0, 10, f"Status: {status}", 0, 1, 'R')
-    pdf.ln(15)
-
-    # --- Technologies Section ---
-    # (Optional: Add here if we parsed it from JSON, currently usually inside findings or metadata)
-    
-    # --- Detailed Findings Header ---
-    pdf.set_font("Arial", "B", 14)
-    pdf.set_text_color(0, 0, 0)
-    pdf.cell(0, 10, "Detailed Security Findings", 0, 1)
-    pdf.set_draw_color(100, 255, 218) # Cyan Line
-    pdf.set_line_width(1)
-    pdf.line(10, pdf.get_y(), 200, pdf.get_y())
-    pdf.ln(5)
-
-    # --- Findings Table ---
-    for f in findings:
-        # Card Background
-        pdf.set_fill_color(255, 255, 255)
-        pdf.set_draw_color(230, 230, 230)
-        pdf.set_line_width(0.2)
-        
-        start_y = pdf.get_y()
-        
-        # Severity Badge
-        severity = f['severity'].upper()
-        if severity == "HIGH":
-            pdf.set_fill_color(254, 226, 226) # Light Red
-            pdf.set_text_color(220, 38, 38)
-        elif severity == "MEDIUM":
-            pdf.set_fill_color(254, 243, 199) # Light Orange
-            pdf.set_text_color(217, 119, 6)
-        else:
-            pdf.set_fill_color(220, 252, 231) # Light Green
-            pdf.set_text_color(22, 163, 74)
-
-        pdf.set_font("Arial", "B", 10)
-        # Draw badge rect
-        pdf.rect(10, start_y, 25, 8, 'F')
-        pdf.set_xy(10, start_y)
-        pdf.cell(25, 8, severity, 0, 0, 'C')
-        
-        # Issue Title
-        pdf.set_xy(40, start_y)
-        pdf.set_font("Arial", "B", 11)
-        pdf.set_text_color(10, 25, 47)
-        pdf.cell(0, 8, clean_pdf_text(f['issue']), 0, 1)
-        
-        # Divider
-        pdf.ln(2)
-        
-        # Recommendation
-        pdf.set_font("Arial", "", 10)
-        pdf.set_text_color(60, 60, 60)
-        rec_text = f"Fix: {f.get('recommendation', 'Check OWASP guidelines')}"
-        pdf.multi_cell(0, 6, clean_pdf_text(rec_text))
-        
-        # Reference Link
-        if f.get('reference_url'):
-            pdf.set_font("Arial", "U", 9)
-            pdf.set_text_color(0, 102, 204) # Link Blue
-            pdf.cell(0, 6, "OWASP Reference", link=f['reference_url'], ln=1)
-        
-        pdf.ln(4)
-        pdf.set_draw_color(240, 240, 240)
-        pdf.line(10, pdf.get_y(), 200, pdf.get_y()) # Separator
-        pdf.ln(4)
-
-    # Output
     try:
-        pdf_content = pdf.output(dest='S').encode('latin-1', 'replace')
-    except Exception as e:
-        logger.error(f"PDF Gen Error: {e}")
-        return "Error creating PDF", 500
+        scan = Scan.query.get(scan_id)
 
-    response = make_response(pdf_content)
-    response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = f'attachment; filename=sentinel_report_{scan_id}.pdf'
-    return response
+        if not scan:
+            return "Scan not found", 404
+        
+        scan_dict = scan.to_dict()
+        findings = scan_dict['findings']
+
+        # Initialize Custom PDF
+        pdf = PDFReport()
+        pdf.set_auto_page_break(auto=True, margin=15)
+        pdf.add_page()
+        
+        # --- Executive Summary Section ---
+        pdf.set_xy(10, 45)
+        
+        # Target Info
+        pdf.set_font("Arial", "B", 12)
+        pdf.set_text_color(50, 50, 50)
+        pdf.cell(20, 10, "Target:", 0, 0)
+        pdf.set_font("Arial", "", 12)
+        pdf.cell(0, 10, clean_pdf_text(scan_dict['url']), 0, 1)
+        
+        pdf.set_font("Arial", "B", 12)
+        pdf.cell(20, 10, "Date:", 0, 0)
+        pdf.set_font("Arial", "", 12)
+        pdf.cell(0, 10, str(scan_dict['created_at']), 0, 1)
+        
+        pdf.ln(5)
+
+        # Score Card
+        pdf.set_fill_color(240, 248, 255) # AliceBlue
+        pdf.set_draw_color(200, 200, 200)
+        pdf.rect(10, pdf.get_y(), 190, 25, 'DF')
+        
+        pdf.set_xy(15, pdf.get_y() + 7)
+        pdf.set_font("Arial", "B", 16)
+        pdf.set_text_color(10, 25, 47)
+        pdf.cell(50, 10, f"Risk Score: {scan_dict['risk_score']}/100", 0, 0)
+        
+        # Determine Status
+        score = scan_dict['risk_score']
+        status = "SECURE" if score < 30 else "VULNERABLE" if score > 70 else "AT RISK"
+        color = (22, 163, 74) if score < 30 else (220, 38, 38) if score > 70 else (217, 119, 6)
+        
+        pdf.set_text_color(*color)
+        pdf.cell(0, 10, f"Status: {status}", 0, 1, 'R')
+        pdf.ln(15)
+
+        # --- Detailed Findings Header ---
+        pdf.set_font("Arial", "B", 14)
+        pdf.set_text_color(0, 0, 0)
+        pdf.cell(0, 10, "Detailed Security Findings", 0, 1)
+        pdf.set_draw_color(100, 255, 218) # Cyan Line
+        pdf.set_line_width(1)
+        pdf.line(10, pdf.get_y(), 200, pdf.get_y())
+        pdf.ln(5)
+
+        # --- Findings Table ---
+        for f in findings:
+            # Card Background
+            pdf.set_fill_color(255, 255, 255)
+            pdf.set_draw_color(230, 230, 230)
+            pdf.set_line_width(0.2)
+            
+            start_y = pdf.get_y()
+            
+            # Severity Badge
+            severity = f['severity'].upper()
+            if severity == "HIGH":
+                pdf.set_fill_color(254, 226, 226) # Light Red
+                pdf.set_text_color(220, 38, 38)
+            elif severity == "MEDIUM":
+                pdf.set_fill_color(254, 243, 199) # Light Orange
+                pdf.set_text_color(217, 119, 6)
+            else:
+                pdf.set_fill_color(220, 252, 231) # Light Green
+                pdf.set_text_color(22, 163, 74)
+
+            pdf.set_font("Arial", "B", 10)
+            # Draw badge rect
+            pdf.rect(10, start_y, 25, 8, 'F')
+            pdf.set_xy(10, start_y)
+            pdf.cell(25, 8, severity, 0, 0, 'C')
+            
+            # Issue Title
+            pdf.set_xy(40, start_y)
+            pdf.set_font("Arial", "B", 11)
+            pdf.set_text_color(10, 25, 47)
+            pdf.cell(0, 8, clean_pdf_text(f['issue']), 0, 1)
+            
+            # Divider
+            pdf.ln(2)
+            
+            # Recommendation
+            pdf.set_font("Arial", "", 10)
+            pdf.set_text_color(60, 60, 60)
+            rec_text = f"Fix: {f.get('recommendation', 'Check OWASP guidelines')}"
+            pdf.multi_cell(0, 6, clean_pdf_text(rec_text))
+            
+            # Reference Link
+            if f.get('reference_url'):
+                pdf.set_font("Arial", "U", 9)
+                pdf.set_text_color(0, 102, 204) # Link Blue
+                pdf.cell(0, 6, "OWASP Reference", link=f['reference_url'], ln=1)
+            
+            pdf.ln(4)
+            pdf.set_draw_color(240, 240, 240)
+            pdf.line(10, pdf.get_y(), 200, pdf.get_y()) # Separator
+            pdf.ln(4)
+
+        # Output
+        # STANDARD FPDF OUTPUT (No double encoding)
+        pdf_content = pdf.output(dest='S').encode('latin-1')
+
+        response = make_response(pdf_content)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = f'attachment; filename=sentinel_report_{scan_id}.pdf'
+        return response
+
+    except Exception as e:
+        logger.error(f"PDF Gen Critical Error: {e}")
+        return jsonify({"error": f"PDF Generation Failed: {str(e)}"}), 500
 if __name__ == "__main__":
     app.run(debug=True, port=5002)
