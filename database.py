@@ -84,4 +84,10 @@ class ScheduledScan(db.Model):
 
 def init_db(app):
     with app.app_context():
-        db.create_all()
+        try:
+            db.create_all()
+        except Exception as e:
+            # Race condition safe: If multiple workers start, they might clash on table creation.
+            # Postgres logs this as "UniqueViolation" for types. We can safely ignore it.
+            print(f"⚠️  Database Schema Creation / Check Warning: {e}")
+            pass
