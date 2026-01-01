@@ -56,7 +56,7 @@ def calculate_risk(findings):
 
 
 @celery.task(bind=True)
-def scan_task(self, url):
+def scan_task(self, url, user_id=None):
     """
     Background Task to scan the website.
     Updates state as it progresses.
@@ -99,6 +99,7 @@ def scan_task(self, url):
         medium_count=summary["Medium"],
         low_count=summary["Low"],
         findings_json=json.dumps(findings),
+        user_id=user_id
     )
     db.session.add(new_scan)
 

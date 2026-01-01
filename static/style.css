@@ -83,6 +83,12 @@ a:hover {
   color: var(--accent);
 }
 
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
 /* FORM - Premium Look */
 .scan-form {
   display: flex;

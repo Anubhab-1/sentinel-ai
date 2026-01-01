@@ -43,7 +43,24 @@ swagger = Swagger(app)
 
 from tasks import scan_task  # noqa: E402
 
+from flask_login import LoginManager, current_user
+from auth import auth as auth_blueprint
+from database import User
+
+# ... existing code ...
+
 init_db(app)
+
+# Initialize Login Manager
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User, int(user_id))
+
+app.register_blueprint(auth_blueprint)
 
 
 # -----------------------------
@@ -237,7 +254,9 @@ def index():
             )
 
         # Trigger Background Task
-        task = scan_task.delay(url)
+        # Trigger Background Task
+        user_id = current_user.id if current_user.is_authenticated else None
+        task = scan_task.delay(url, user_id=user_id)
 
         return jsonify({"task_id": task.id}), 202
 
@@ -283,10 +302,13 @@ def history():
     # PRIVACY FEATURE: Only show scans belonging to this browser session
     my_ids = session.get("my_scans", [])
 
-    if not my_ids:
+    if current_user.is_authenticated:
+        # User Scans
+        scans = Scan.query.filter_by(user_id=current_user.id).order_by(Scan.created_at.desc()).all()
+    elif not my_ids:
         scans = []
     else:
-        # Filter: ID must be in my_ids list
+        # Anonymous Scans
         scans = (
             Scan.query.filter(Scan.id.in_(my_ids))
             .order_by(Scan.created_at.desc())
