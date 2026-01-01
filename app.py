@@ -456,6 +456,7 @@ class PDFReport(FPDF):
         # Subtitle
         self.set_font("Arial", "", 10)
         self.set_text_color(200, 200, 200)
+        self.set_x(45)  # Ensure text aligns with title and clears logo
         self.cell(
             0,
             5,
