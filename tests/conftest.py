@@ -11,8 +11,17 @@ if ROOT not in sys.path:
 from app import app as _app  # noqa: F401, E402
 
 
+from database import db
+
 @pytest.fixture
 def client():
     _app.config["TESTING"] = True
+    # use in-memory db for speed
+    _app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+    
     with _app.test_client() as client:
-        yield client
+        with _app.app_context():
+            db.create_all()
+            yield client
+            db.session.remove()
+            db.drop_all()
