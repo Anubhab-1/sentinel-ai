@@ -57,15 +57,41 @@ class Config:
     # Database
     # Use absolute path in Docker to ensure persistence in volume
     _env_db_url = os.getenv("DATABASE_URL", "")
-    if not _env_db_url.strip():
+    
+    # 1. Debug Print (Safe version)
+    _safe_print_url = _env_db_url if not _env_db_url else f"{_env_db_url[:15]}..."
+    print(f"🔧 DEBUG: Loading DATABASE_URL from Env: '{_safe_print_url}'")
+
+    # 2. Heuristic Check: If it looks garbage, ignore it
+    if not _env_db_url or len(_env_db_url.strip()) < 10:
+        print("⚠️  Invalid or empty DATABASE_URL detected. Falling back to internal SQLite.")
         _env_db_url = "sqlite:////app/sentinel.db"
     
     # Clean up quotes and fix postgres protocol
     DATABASE_URL: str = _env_db_url.strip().strip('"').strip("'")
+    
+    # 3. Protocol Enforcement
     if DATABASE_URL.startswith("postgres://"):
         DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
         
+    # 4. Final Safety Check
+    if not DATABASE_URL.startswith(("sqlite:", "postgresql:", "mysql:")):
+         print(f"⚠️  Unknown protocol in '{DATABASE_URL}'. Falling back to internal SQLite.")
+         DATABASE_URL = "sqlite:////app/sentinel.db"
+
+         DATABASE_URL = "sqlite:////app/sentinel.db"
+
     SQLALCHEMY_DATABASE_URI: str = DATABASE_URL
+    
+    # Fix for "SSL connection has been closed unexpectedly" (common in Cloud DBs)
+    # pool_pre_ping: Checks connection liveliness before use
+    # pool_recycle: Refreshes connections every 5 mins to avoid timeout
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "pool_pre_ping": True,
+        "pool_recycle": 300,
+        "pool_size": 5,      # Keep 5 connections open
+        "max_overflow": 10   # Allow up to 10 more if needed
+    }
 
     # Celery / Redis
     # Render provides REDIS_URL, we map it to Celery if simple config
