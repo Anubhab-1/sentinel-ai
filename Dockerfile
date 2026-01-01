@@ -22,6 +22,12 @@ COPY . .
 # Make startup script executable
 RUN chmod +x start.sh
 
+# Create a non-root user for security
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# Set ownership of the app directory
+RUN chown -R appuser:appuser /app
+
 # Create directory for SQLite DB if it doesn't exist
 RUN mkdir -p /app/data
 
@@ -32,6 +38,9 @@ EXPOSE 5002
 ENV FLASK_APP=app.py
 ENV PYTHONUNBUFFERED=1
 ENV PORT=5002
+
+# Switch to non-root user
+USER appuser
 
 # Run command (Production Server)
 # Binding to 0.0.0.0 is required for Docker containers

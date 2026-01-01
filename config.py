@@ -44,7 +44,7 @@ class Config:
     # Render provides REDIS_URL, we map it to Celery if simple config
     _REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
     CELERY_BROKER_URL: str = os.getenv("CELERY_BROKER_URL", _REDIS_URL)
-    CELERY_RESULT_BACKEND: str = os.getenv("CELERY_RESULT_BACKEND", _REDIS_URL)
+    result_backend: str = os.getenv("CELERY_RESULT_BACKEND", _REDIS_URL)
 
     
     # Features

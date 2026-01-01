@@ -4,7 +4,7 @@ from config import config
 def make_celery():
     celery = Celery(
         "app",
-        backend=config.CELERY_RESULT_BACKEND,
+        backend=config.result_backend,
         broker=config.CELERY_BROKER_URL
     )
     celery.conf.update(config.__dict__)
