@@ -35,9 +35,20 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     
-    - name: Run Tests
+    - name: Run Quality Checks
       run: |
-        pytest -q
+        # Stop the build if there are Python syntax errors or undefined names
+        ruff check .
+        # Check formatting
+        black --check .
+        # Type checking
+        mypy .
+        # Security scan
+        bandit -r . -ll
+
+    - name: Run Tests with Coverage
+      run: |
+        pytest --cov=app --cov-report=term-missing
 
 
   build-check:

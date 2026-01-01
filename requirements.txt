@@ -15,3 +15,10 @@ flasgger
 pytest-cov
 celery
 redis
+ruff
+black
+mypy
+bandit
+types-requests
+types-redis
+
