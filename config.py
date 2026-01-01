@@ -22,7 +22,7 @@ class Config:
     SESSION_COOKIE_SECURE: bool = os.getenv("FLASK_ENV") == "production"
 
     # Security
-    RATE_LIMIT_PER_MINUTE: str = os.getenv("RATE_LIMIT", "5 per minute")
+    RATE_LIMIT_PER_MINUTE: str = os.getenv("RATE_LIMIT", "60 per minute")
     API_KEY: str = os.getenv("API_KEY", "")
 
     # Use field(default_factory=...) for mutable defaults
