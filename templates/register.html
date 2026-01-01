@@ -3,16 +3,18 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register | Sentinel-AI</title>
     <link rel="stylesheet" href="/static/style.css">
     <style>
         .auth-container {
             max-width: 400px;
-            margin: 100px auto;
+            margin: 60px auto;
             padding: 30px;
             background: #111827;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            width: 90%;
         }
 
         .form-group {
@@ -57,14 +59,22 @@
             background: #fee2e2;
             color: #991b1b;
         }
+
+        .logo-auth {
+            height: 60px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <header style="text-align: center; margin-bottom: 20px;">
-            <a href="/" style="text-decoration:none;">
-                <h1 style="color: #00f0ff;">SENTINEL AI</h1>
+        <header style="text-align: center; margin-bottom: 20px; border:none;">
+            <a href="/" style="text-decoration:none; display:flex; flex-direction:column; align-items:center;">
+                <img src="/static/logo.jpg" alt="Logo" class="logo-auth">
+                <h1 style="color: #00f0ff; margin:0; font-size:28px;">SENTINEL AI</h1>
             </a>
         </header>
 
