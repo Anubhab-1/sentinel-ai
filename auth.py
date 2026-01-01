@@ -74,14 +74,19 @@ from app import mail, redis_client
 def generate_otp():
     return ''.join(random.choices(string.digits, k=6))
 
+import traceback
+
 def send_otp_email(to_email, otp):
     try:
+        print(f"📧 Attempting to send OTP to {to_email} via {config.MAIL_SERVER}...")
         msg = Message("Sentinel AI - Verification Code", recipients=[to_email])
         msg.body = f"Your verification code is: {otp}\n\nThis code expires in 5 minutes."
         mail.send(msg)
+        print(f"✅ OTP sent successfully to {to_email}")
         return True
     except Exception as e:
-        print(f"Mail Error: {e}")
+        print(f"❌ Mail Error: {e}")
+        traceback.print_exc()
         return False
 
 @auth.route('/forgot-password', methods=['GET', 'POST'])

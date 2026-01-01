@@ -49,7 +49,8 @@ class Config:
     AI_TIMEOUT: int = int(os.getenv("AI_TIMEOUT", "30"))
 
     # Database
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///sentinel.db")
+    # Use absolute path in Docker to ensure persistence in volume
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:////app/sentinel.db")
     SQLALCHEMY_DATABASE_URI: str = DATABASE_URL
 
     # Celery / Redis
@@ -69,6 +70,7 @@ class Config:
     MAIL_USERNAME: str = os.getenv("MAIL_USERNAME", "")
     MAIL_PASSWORD: str = os.getenv("MAIL_PASSWORD", "")
     MAIL_DEFAULT_SENDER: str = os.getenv("MAIL_DEFAULT_SENDER", MAIL_USERNAME)
+    MAIL_DEBUG: bool = True  # Force debug logging for mail
 
     # --- CONSTANTS ---
     SECURITY_HEADERS: List[str] = field(
