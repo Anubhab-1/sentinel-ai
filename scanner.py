@@ -1,9 +1,10 @@
 import asyncio
 import sys
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 
 import aiohttp
 from bs4 import BeautifulSoup
+from scanners.injection import check_sql_injection, check_xss
 
 from config import config
 
@@ -249,5 +250,18 @@ async def scan_website(url):
                         "reasons": ["Configuration is not following best practices"],
                     }
                 )
+        
+        # 3. Deep Scan (Injection Checks)
+        parsed_url = urlparse(url)
+        params = parse_qs(parsed_url.query)
+        
+        if params:
+            # Run injection checks concurrently
+            injection_findings_list = await asyncio.gather(
+                check_sql_injection(session, url, params),
+                check_xss(session, url, params)
+            )
+            for f_list in injection_findings_list:
+                findings.extend(f_list)
 
     return findings, metadata

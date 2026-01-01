@@ -15,6 +15,7 @@ socket.getaddrinfo = new_getaddrinfo
 
 from flasgger import Swagger
 from flask import Flask, jsonify, make_response, render_template, request, session
+from flask_login import LoginManager, current_user, login_required
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_wtf.csrf import CSRFProtect
@@ -693,6 +694,48 @@ def download_pdf(scan_id):
     except Exception as e:
         logger.error(f"PDF Gen Critical Error: {e}")
         return jsonify({"error": f"PDF Generation Failed: {str(e)}"}), 500
+
+
+# --- DASHBOARD API ---
+
+@app.route('/api/stats', methods=['GET'])
+@login_required
+def get_stats():
+    """
+    Returns aggregated stats for the logged-in user's scans.
+    """
+    scans = Scan.query.filter_by(user_id=current_user.id).order_by(Scan.created_at.desc()).all()
+    
+    total_scans = len(scans)
+    avg_score = 0
+    if total_scans > 0:
+        avg_score = sum(s.risk_score for s in scans) / total_scans
+
+    # Aggregated Vulnerabilities
+    severity_counts = {"High": 0, "Medium": 0, "Low": 0}
+    
+    recent_activity = []
+    
+    for s in scans:
+        severity_counts["High"] += s.high_count or 0
+        severity_counts["Medium"] += s.medium_count or 0
+        severity_counts["Low"] += s.low_count or 0
+        
+        if len(recent_activity) < 10:
+            recent_activity.append(s.to_dict())
+
+    return jsonify({
+        "total_scans": total_scans,
+        "average_risk_score": round(avg_score, 1),
+        "severity_distribution": severity_counts,
+        "recent_scans": recent_activity
+    })
+
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
 
 
 if __name__ == "__main__":

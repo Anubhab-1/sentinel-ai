@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Sentinel-AI{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/style.css">
+
+    <!-- Tailwind CSS (CDN for Dashboard) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#0a192f',
+                        light: '#ccd6f6',
+                        primary: '#00f0ff'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-900 text-white font-sans antialiased">
+
+    <!-- Navigation -->
+    <nav class="bg-gray-800 border-b border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img class="h-8 w-8 rounded mr-2" src="/static/logo.jpg" alt="Logo">
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="text-xl font-bold text-primary">SENTINEL AI</div>
+                    </div>
+                </div>
+
+                <!-- Links -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="/" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Scanner</a>
+                        {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('dashboard') }}"
+                            class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Dashboard</a>
+                        <a href="{{ url_for('history') }}"
+                            class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">History</a>
+                        <a href="{{ url_for('auth.logout') }}"
+                            class="px-3 py-2 rounded-md text-sm font-medium text-red-400 hover:bg-gray-700">Logout</a>
+                        {% else %}
+                        <a href="{{ url_for('auth.login') }}"
+                            class="px-3 py-2 rounded-md text-sm font-medium bg-primary text-black hover:bg-cyan-400">Login</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 text-gray-500 text-xs tracking-wider">
+        POWERED BY <b>RAKSHANETRA™</b>
+    </footer>
+
+</body>
+
+</html>

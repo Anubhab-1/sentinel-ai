@@ -39,6 +39,9 @@ class Scan(db.Model):
             "url": self.url,
             "risk_score": self.risk_score,
             "created_at": self.created_at.isoformat(),
+            "high": self.high_count,
+            "medium": self.medium_count,
+            "low": self.low_count,
             "findings": json.loads(self.findings_json) if self.findings_json else [],
         }
 
