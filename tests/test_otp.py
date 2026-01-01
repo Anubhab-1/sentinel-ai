@@ -29,23 +29,7 @@ def mock_mail():
     with patch('auth.mail.send') as mock:
         yield mock
 
-@pytest.fixture
-def mock_redis():
-    # Simple Fake Redis implementation
-    store = {}
-    class FakeRedis:
-        def setex(self, key, time, value):
-            store[key] = value.encode('utf-8') if isinstance(value, str) else value
-        def get(self, key):
-            return store.get(key)
-        def delete(self, key):
-            if key in store:
-                del store[key]
 
-    fake = FakeRedis()
-    # Patch where it is USED (auth.py imports it from app)
-    with patch('auth.redis_client', fake), patch('app.redis_client', fake):
-        yield fake
 
 
 def test_forgot_password_flow(client, mock_mail, mock_redis):

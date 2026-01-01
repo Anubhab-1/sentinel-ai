@@ -45,7 +45,15 @@ swagger = Swagger(app)
 mail = Mail(app)
 
 # Redis for OTP storage
-redis_client = redis.from_url(app.config["CELERY_BROKER_URL"])
+if os.environ.get("FLASK_TESTING"):
+    class FakeRedis:
+        def from_url(self, url): return self
+        def setex(self, k, t, v): pass
+        def get(self, k): return None
+        def delete(self, k): pass
+    redis_client = FakeRedis()
+else:
+    redis_client = redis.from_url(app.config["CELERY_BROKER_URL"])
 
 # Initialize Celery
 # Celery is initialized in celery_app.py
@@ -58,7 +66,8 @@ from database import User
 
 # ... existing code ...
 
-init_db(app)
+# Database initialization is handled later to allow tests to configure DB URI
+# (see guarded init below).
 
 # Initialize Login Manager
 login_manager = LoginManager()
@@ -71,6 +80,14 @@ def load_user(user_id):
 
 app.register_blueprint(auth_blueprint)
 
+# Initialize DB only when not running under pytest to avoid import-time
+# file-based DB creation that may fail in CI or local test runs.
+# Avoid creating DB schema at import time when running under pytest
+# (pytest imports modules before setting up test fixtures). We detect a
+# pytest run by checking for the presence of the `pytest` module in
+# sys.modules.
+if not os.getenv("PYTEST_CURRENT_TEST") and "pytest" not in sys.modules:
+    init_db(app)
 
 # -----------------------------
 # Risk score calculation

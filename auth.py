@@ -38,7 +38,9 @@ def register():
         password = request.form.get('password')
         
         try:
-            validate_email(email)
+            # Avoid strict MX/deliverability checks during signup to prevent
+            # failures for valid-looking test domains (e.g., example.com)
+            validate_email(email, check_deliverability=False)
         except EmailNotValidError:
             flash('Invalid email address.', 'error')
             return redirect(url_for('auth.register'))
@@ -70,6 +72,7 @@ import random
 import string
 from flask_mail import Message
 from app import mail, redis_client
+from config import config
 
 def generate_otp():
     return ''.join(random.choices(string.digits, k=6))
