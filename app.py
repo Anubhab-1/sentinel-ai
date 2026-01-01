@@ -494,7 +494,12 @@ def download_pdf(scan_id):
         scan = db.session.get(Scan, scan_id)
 
         if not scan:
-            return "Scan not found", 404
+            return (
+                render_template(
+                    "error.html", error_code=404, error_message="Scan not found"
+                ),
+                404,
+            )
 
         scan_dict = scan.to_dict()
         findings = scan_dict["findings"]
