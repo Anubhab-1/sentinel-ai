@@ -15,7 +15,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from ai_explainer import explain_finding
 from config import config
-from database import AuditLog, Scan, db, init_db
+from database import AuditLog, Scan, ScheduledScan, db, init_db
 from logging_config import setup_logging
 from security import is_safe_url, sanitize_input
 
@@ -311,6 +311,12 @@ def history():
     )
 
 
+@app.route('/manage/schedules')
+def manage_schedules():
+    """Management UI for scheduled scans."""
+    return render_template('schedules.html')
+
+
 # -----------------------------
 # AI Explanation
 # -----------------------------
@@ -328,6 +334,79 @@ def explain():
         explanation = "AI service unavailable. Please check OWASP for manual guidance."
 
     return jsonify({"explanation": explanation})
+
+
+# -----------------------------
+# Scheduled Scans API
+# -----------------------------
+@app.route("/schedules", methods=["GET", "POST"])
+@require_api_key
+def schedules():
+    if request.method == "GET":
+        schedules = ScheduledScan.query.order_by(ScheduledScan.created_at.desc()).all()
+        data = [
+            {
+                "id": s.id,
+                "url": s.url,
+                "interval_minutes": s.interval_minutes,
+                "enabled": s.enabled,
+                "last_run": s.last_run.isoformat() if s.last_run else None,
+                "created_at": s.created_at.isoformat(),
+            }
+            for s in schedules
+        ]
+        return jsonify({"schedules": data})
+
+    # POST -> create
+    data = request.get_json() or {}
+    url = sanitize_input(data.get("url", ""))
+    interval = data.get("interval_minutes", 60)
+
+    if not url or not validate_url(url):
+        return jsonify({"error": "Invalid URL"}), 400
+    try:
+        interval = int(interval)
+        if interval <= 0:
+            raise ValueError()
+    except Exception:
+        return jsonify({"error": "Invalid interval_minutes"}), 400
+
+    s = ScheduledScan(url=url, interval_minutes=interval)
+    db.session.add(s)
+    db.session.commit()
+    log_audit_event("SCHEDULE_CREATE", f"Created schedule {s.id} for {s.url}")
+    return jsonify({"id": s.id, "url": s.url}), 201
+
+
+@app.route("/schedules/<int:sid>", methods=["PUT", "DELETE"])
+@require_api_key
+def schedule_detail(sid):
+    s = ScheduledScan.query.get(sid)
+    if not s:
+        return jsonify({"error": "Schedule not found"}), 404
+
+    if request.method == "DELETE":
+        db.session.delete(s)
+        db.session.commit()
+        log_audit_event("SCHEDULE_DELETE", f"Deleted schedule {sid}")
+        return jsonify({"status": "deleted"})
+
+    # PUT -> update properties
+    data = request.get_json() or {}
+    if "enabled" in data:
+        s.enabled = bool(data.get("enabled"))
+    if "interval_minutes" in data:
+        try:
+            interval = int(data.get("interval_minutes"))
+            if interval <= 0:
+                raise ValueError()
+            s.interval_minutes = interval
+        except Exception:
+            return jsonify({"error": "Invalid interval_minutes"}), 400
+
+    db.session.commit()
+    log_audit_event("SCHEDULE_UPDATE", f"Updated schedule {sid}")
+    return jsonify({"id": s.id, "enabled": s.enabled, "interval_minutes": s.interval_minutes})
 
 
 # -----------------------------

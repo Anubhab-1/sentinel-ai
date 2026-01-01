@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Manage Schedules - Sentinel</title>
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Manage Scheduled Scans</h1>
+        <p>Create, update, and delete recurring scan schedules.</p>
+        <a href="/">← Back to Dashboard</a>
+      </header>
+
+      <section id="create">
+        <h2>Create Schedule</h2>
+        <form id="create-form">
+          <input type="text" id="url" placeholder="https://example.com" required />
+          <input type="number" id="interval" value="60" min="1" required />
+          <button type="submit">Create</button>
+        </form>
+        <div id="create-result"></div>
+      </section>
+
+      <section id="list">
+        <h2>Existing Schedules</h2>
+        <table id="schedules-table">
+          <thead>
+            <tr><th>ID</th><th>URL</th><th>Interval (min)</th><th>Enabled</th><th>Last Run</th><th>Actions</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </div>
+
+    <script src="/static/schedules.js"></script>
+  </body>
+</html>

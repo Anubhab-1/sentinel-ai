@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -34,6 +34,33 @@ class AuditLog(db.Model):
     details = db.Column(db.String(500))
     ip_address = db.Column(db.String(50))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class ScheduledScan(db.Model):
+    """Simple interval-based schedule for recurring scans.
+
+    Fields:
+      - url: target to scan
+      - interval_minutes: how often to run (integer minutes)
+      - enabled: toggle
+      - last_run: last run timestamp
+    """
+
+    __tablename__ = "scheduled_scans"
+    id = db.Column(db.Integer, primary_key=True)
+    url = db.Column(db.String(500), nullable=False)
+    interval_minutes = db.Column(db.Integer, default=60, nullable=False)
+    enabled = db.Column(db.Boolean, default=True)
+    last_run = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def next_run(self):
+        """Return the next run datetime or None if disabled."""
+        if not self.enabled:
+            return None
+        if not self.last_run:
+            return self.created_at
+        return self.last_run + timedelta(minutes=self.interval_minutes)
 
 
 def init_db(app):
