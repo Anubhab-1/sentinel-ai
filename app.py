@@ -73,17 +73,19 @@ import functools
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from security import is_safe_url, sanitize_input
+from logging_config import setup_logging
+from prometheus_flask_exporter import PrometheusMetrics
 
 # -----------------------------
 # Configuration & Setup
 # -----------------------------
 
-# Configure Logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+# Configure Logging (Structured JSON)
+logger = setup_logging()
+
+# Initialize Prometheus Metrics
+metrics = PrometheusMetrics(app)
+metrics.info('app_info', 'Application info', version='1.0.0')
 
 # Initialize Limiter
 limiter = Limiter(

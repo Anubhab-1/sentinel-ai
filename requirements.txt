@@ -1,17 +1,18 @@
-flask[async]
-requests
-beautifulsoup4
-fpdf
-aiohttp
-flask-limiter
-gunicorn
+flask[async]==2.2.5
+Werkzeug==2.2.2
+requests==2.31.0
+beautifulsoup4==4.12.0
+fpdf==1.7.2
+aiohttp==3.9.0
+flask-limiter==3.5.0
+gunicorn==21.2.0
 
-flask-wtf
-pytest
-python-dotenv
-flask-sqlalchemy
-psycopg2-binary
-flasgger
+flask-wtf==1.2.0
+pytest==7.4.0
+python-dotenv==1.0.0
+flask-sqlalchemy==3.1.0
+psycopg2-binary==2.9.0
+flasgger==0.9.0
 pytest-cov
 celery
 redis
@@ -21,4 +22,6 @@ mypy
 bandit
 types-requests
 types-redis
+python-json-logger
+prometheus-flask-exporter
 
