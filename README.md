@@ -14,20 +14,24 @@
 
 ### 🔍 Advanced Scanning Engine
 - **Deep Header Analysis**: Checks for missing or misconfigured security headers (CSP, HSTS, X-Frame-Options, etc.).
+- **Active Vulnerability Probing**: Use advanced fuzzing to detect **SQL Injection** and **Reflected XSS** attacks.
 - **Port Scanning**: Identifies open ports and services exposing potential attack vectors.
-- **Technology Fingerprinting**: Automatically detects server stacks (Nginx, Apache) and frontend frameworks (React, jQuery, Bootstrap).
+- **Technology Fingerprinting**: Automatically detects server stacks (Nginx, Apache) and frontend frameworks.
 - **SSRF Protection**: Built-in validation to prevent unauthorized internal network access.
 
 ### 🧠 AI-Powered Analysis
-- **Context-Aware Explanations**: Uses LLMs (Perplexity Sonar-Pro) to explain *why* a vulnerability matters in plain English.
+- **Context-Aware Explanations**: Uses LLMs (Perplexity Sonar-Pro) to explain *why* a vulnerability matters.
 - **Actionable Remediation**: Provides copy-paste fix instructions tailored to the specific issue.
-- **Smart Fallback**: auto-switches to offline knowledge base if the AI service is unreachable.
+
+### 📊 Visual Dashboard
+- **Real-Time Analytics**: Track total scans, average risk scores, and vulnerability distribution (High/Medium/Low).
+- **Interactive Charts**: Powered by Chart.js to visualize security trends over time.
+- **History Management**: Detailed audit logs of every scan performed.
 
 ### 🏢 Enterprise Architecture
-- **Asynchronous Processing**: Powered by **Celery** & **Redis** to handle background scans without blocking the UI.
-- **Containerized Deployment**: Fully dockerized (App + Worker + Redis) for one-click setup.
-- **Audit Logging**: Tracks all authentication attempts and scan activities for compliance.
-- **PDF Reporting**: Generates client-ready, branded PDF reports with executive summaries and OWASP references.
+- **Asynchronous Processing**: Powered by **Celery** & **Redis** for non-blocking scans.
+- **PostgreSQL Ready**: Native support for high-performance, persistent databases on cloud platforms (Render/Neon).
+- **PDF Reporting**: Generates client-ready, branded PDF reports with executive summaries.
 
 ---
 
