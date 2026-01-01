@@ -491,7 +491,9 @@ def download_pdf(scan_id):
     sys.setrecursionlimit(2000)
 
     try:
-        scan = db.session.get(Scan, scan_id)
+        # scan = db.session.get(Scan, scan_id) <-- potentially problematic in some envs
+        # Reverting to query.filter_by which matches the working history() logic
+        scan = Scan.query.filter_by(id=scan_id).first()
 
         if not scan:
             return (
