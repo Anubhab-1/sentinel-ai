@@ -61,6 +61,14 @@ class Config:
     # Features
     ENABLE_PORT_SCAN: bool = os.getenv("ENABLE_PORT_SCAN", "true").lower() == "true"
     ENABLE_AI: bool = os.getenv("ENABLE_AI", "true").lower() == "true"
+    
+    # Mail Config (For OTP)
+    MAIL_SERVER: str = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+    MAIL_PORT: int = int(os.getenv("MAIL_PORT", "587"))
+    MAIL_USE_TLS: bool = os.getenv("MAIL_USE_TLS", "true").lower() == "true"
+    MAIL_USERNAME: str = os.getenv("MAIL_USERNAME", "")
+    MAIL_PASSWORD: str = os.getenv("MAIL_PASSWORD", "")
+    MAIL_DEFAULT_SENDER: str = os.getenv("MAIL_DEFAULT_SENDER", MAIL_USERNAME)
 
     # --- CONSTANTS ---
     SECURITY_HEADERS: List[str] = field(

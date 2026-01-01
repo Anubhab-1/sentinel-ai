@@ -28,4 +28,5 @@ pytest-asyncio
 # Auth
 flask-login==0.6.3
 email-validator==2.1.0
+flask-mail==0.9.1
 

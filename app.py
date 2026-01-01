@@ -34,9 +34,18 @@ if not app.config.get("CELERY_BROKER_URL"):
     print(f"🔧 Manual Config Override: Broker set to {redis_url}")
 else:
     print(f"✅ Config Loaded: Broker is {app.config['CELERY_BROKER_URL']}")
+from flask_mail import Mail
+import redis
+
+# ... existing code ...
+
 db.init_app(app)
 csrf = CSRFProtect(app)
 swagger = Swagger(app)
+mail = Mail(app)
+
+# Redis for OTP storage
+redis_client = redis.from_url(app.config["CELERY_BROKER_URL"])
 
 # Initialize Celery
 # Celery is initialized in celery_app.py
