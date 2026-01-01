@@ -3,7 +3,8 @@
 
 **Sentinel AI** is an enterprise-grade automated security auditing platform designed to detect, analyze, and explain web vulnerabilities in real-time. Built with a scalable microservices architecture, it leverages AI to provide context-aware remediation strategies.
 
-[![CI Pipeline](https://github.com/yourusername/sentinel-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/sentinel-ai/actions)
+[![CI Pipeline](https://github.com/Anubhab-1/sentinel-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/Anubhab-1/sentinel-ai/actions)
+[![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Docker](https://img.shields.io/badge/Docker-Enabled-blue.svg)](https://www.docker.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 

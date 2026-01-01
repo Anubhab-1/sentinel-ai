@@ -55,6 +55,34 @@ We recommended **Railway** or **Render** because they support `docker-compose` e
         - `API_KEY`
 6.  Click **Deploy**. Railway will give you a permanent `https://sentinel-production.up.railway.app` link.
 
+6.  Click **Deploy**. Railway will give you a permanent `https://sentinel-production.up.railway.app` link.
+
+---
+
+## Option 3: Standard Docker Deployment (VPS)
+If you have a VPS (DigitalOcean, AWS EC2), use `docker-compose`:
+
+1.  **Clone Repo**:
+    ```bash
+    git clone https://github.com/Anubhab-1/sentinel-ai.git
+    cd sentinel-ai
+    ```
+
+2.  **Environment**:
+    Create a `.env` file (see `.env.example` or docs).
+
+3.  **Run**:
+    ```bash
+    docker-compose up -d --build
+    ```
+
+## ⚙️ Production Configuration
+For production environments, ensure:
+- `FLASK_ENV=production`
+- `FLASK_DEBUG=false`
+- `SECRET_KEY` is a strong random string.
+- Using a production WSGI server (Gunicorn is built into our Dockerfile).
+
 ---
 
 ## Summary
@@ -62,5 +90,6 @@ We recommended **Railway** or **Render** because they support `docker-compose` e
 | :--- | :--- | :--- | :--- |
 | **ngrok** | ⭐ Very Easy | Free | Only while laptop is on |
 | **Railway/Render** | ⭐⭐⭐ Medium | Free Tier / $5/mo | 24/7 |
+| **VPS (Docker)** | ⭐⭐⭐⭐ Hard | $5/mo+ | 24/7 |
 
-**Recommendation:** Start with **ngrok** to show your friends right now!
+**Recommendation:** Cloud Hosting (Option 2) for long-term usage.
