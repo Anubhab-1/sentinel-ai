@@ -24,4 +24,5 @@ types-requests
 types-redis
 python-json-logger
 prometheus-flask-exporter
+pytest-asyncio
 

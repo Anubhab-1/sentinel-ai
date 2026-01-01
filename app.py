@@ -411,7 +411,7 @@ def download_pdf(scan_id):
     sys.setrecursionlimit(2000)
 
     try:
-        scan = Scan.query.get(scan_id)
+        scan = db.session.get(Scan, scan_id)
 
         if not scan:
             return "Scan not found", 404

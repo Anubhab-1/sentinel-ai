@@ -30,7 +30,9 @@ async def test_scan_website_reachable():
         mock_request_ctx.__aenter__.return_value = mock_response
         mock_session_instance.request.return_value = mock_request_ctx
 
-        findings, metadata = await scan_website("https://example.com")
+        # Mock port scan to return nothing safe
+        with patch("scanner.scan_ports_async", return_value=[]) as mock_ports:
+            findings, metadata = await scan_website("https://example.com")
 
         # Assertions
         assert metadata["reachable"] is True
@@ -54,9 +56,48 @@ async def test_scan_website_missing_headers():
         mock_request_ctx.__aenter__.return_value = mock_response
         mock_session_instance.request.return_value = mock_request_ctx
 
-        findings, metadata = await scan_website("https://insecure.com")
+        # Mock port scan
+        with patch("scanner.scan_ports_async", return_value=[]):
+            findings, metadata = await scan_website("https://insecure.com")
 
         assert len(findings) > 0
         issues = [f["issue"] for f in findings]
         assert "Missing Content-Security-Policy" in issues
         assert "Missing X-Frame-Options" in issues
+
+
+@pytest.mark.asyncio
+async def test_scan_website_open_ports():
+    with patch("aiohttp.ClientSession") as MockSession:
+        # Minimal mock for the web part
+        mock_session = MockSession.return_value
+        mock_session.__aenter__.return_value = mock_session
+        mock_resp = AsyncMock()
+        mock_resp.status = 200
+        mock_resp.headers = {"Content-Security-Policy": "default-src 'self'"} # Minimal safe header
+        mock_resp.text.return_value = ""
+        mock_req = AsyncMock()
+        mock_req.__aenter__.return_value = mock_resp
+        mock_session.request.return_value = mock_req
+
+        # Test Finding Open Ports
+        with patch("scanner.scan_ports_async", return_value=["FTP (21)", "SSH (22)"]):
+             findings, metadata = await scan_website("https://vulnerable-ports.com")
+        
+        issues = [f["issue"] for f in findings]
+        assert "Exposed Network Services" in issues
+        risk = next(f for f in findings if f["issue"] == "Exposed Network Services")
+        assert "FTP (21)" in risk["reasons"][0]
+        assert "High" == risk["severity"]
+
+
+from scanner import analyze_header_strength
+
+def test_analyze_header_strength():
+    assert analyze_header_strength("Content-Security-Policy", "default-src 'self'") == "Strong"
+    assert analyze_header_strength("Content-Security-Policy", "unsafe-inline") == "Weak"
+    assert analyze_header_strength("X-Frame-Options", "DENY") == "Strong"
+    assert analyze_header_strength("X-Frame-Options", "ALLOW-FROM foo") == "Weak"
+    assert analyze_header_strength("Strict-Transport-Security", "max-age=31536000") == "Strong"
+    assert analyze_header_strength("Strict-Transport-Security", "max-age=300") == "Weak"
+
