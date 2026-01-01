@@ -57,6 +57,8 @@ class Config:
     # Database
     # Use absolute path in Docker to ensure persistence in volume
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:////app/sentinel.db")
+    if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
     SQLALCHEMY_DATABASE_URI: str = DATABASE_URL
 
     # Celery / Redis
