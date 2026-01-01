@@ -1,5 +1,6 @@
 # config.py
 import os
+from datetime import timedelta
 from dataclasses import dataclass, field
 from typing import Dict, List
 
@@ -20,6 +21,11 @@ class Config:
     SESSION_COOKIE_HTTPONLY: bool = True
     SESSION_COOKIE_SAMESITE: str = "Lax"
     SESSION_COOKIE_SECURE: bool = os.getenv("FLASK_ENV") == "production"
+    
+    # Session & CSRF Settings
+    # Fix: "CSRF token expired" issues by extending lifetime
+    WTF_CSRF_TIME_LIMIT: int = None  # None = valid for session life
+    PERMANENT_SESSION_LIFETIME: timedelta = timedelta(days=7)  # Keep logged in for 7 days
 
     # Security
     RATE_LIMIT_PER_MINUTE: str = os.getenv("RATE_LIMIT", "60 per minute")
