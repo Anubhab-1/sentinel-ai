@@ -3,6 +3,15 @@ import json
 import os
 import re
 import sys
+import socket
+
+# FORCE IPv4 PATCH: Fixes "Network is unreachable" in Docker/Render
+# This filters out IPv6 addresses from DNS resolution
+old_getaddrinfo = socket.getaddrinfo
+def new_getaddrinfo(*args, **kwargs):
+    responses = old_getaddrinfo(*args, **kwargs)
+    return [r for r in responses if r[0] == socket.AF_INET]
+socket.getaddrinfo = new_getaddrinfo
 
 from flasgger import Swagger
 from flask import Flask, jsonify, make_response, render_template, request, session
