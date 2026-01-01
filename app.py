@@ -330,6 +330,13 @@ class PDFReport(FPDF):
         self.set_fill_color(10, 25, 47) # Dark Navy (Matches UI)
         self.rect(0, 0, 210, 40, 'F')
         
+        # Logo
+        try:
+            self.image('static/logo.jpg', 10, 5, 30) # X, Y, W
+            self.set_xy(45, 10) # Move text cursor to right of logo
+        except:
+            self.set_xy(10, 10) # Fallback if logo missing
+
         # Title "SENTINEL AI"
         self.set_font('Arial', 'B', 24)
         self.set_text_color(100, 255, 218) # Cyan Accent
