@@ -2,11 +2,7 @@ def build_report(url, findings):
     summary = {"High": 0, "Medium": 0, "Low": 0}
     score = 0
 
-    weights = {
-        "High": 20,
-        "Medium": 10,
-        "Low": 5
-    }
+    weights = {"High": 20, "Medium": 10, "Low": 5}
 
     for f in findings:
         severity = f["severity"]
@@ -20,5 +16,5 @@ def build_report(url, findings):
         "target": url,
         "summary": summary,
         "risk_score": score,
-        "findings": findings
+        "findings": findings,
     }

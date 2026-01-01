@@ -11,11 +11,11 @@ def get_reference(issue):
         "Cookie": "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#cookies-attributes",
         "Exposed Network Services": "https://cheatsheetseries.owasp.org/cheatsheets/Attack_Surface_Analysis_Cheat_Sheet.html",
         "SSL": "https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Protection_Cheat_Sheet.html",
-        "TLS": "https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Protection_Cheat_Sheet.html"
+        "TLS": "https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Protection_Cheat_Sheet.html",
     }
 
     for key, url in references.items():
         if key.lower() in issue.lower():
             return url
-    
+
     return "https://cheatsheetseries.owasp.org/"
