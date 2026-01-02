@@ -89,9 +89,12 @@ class Config:
     SQLALCHEMY_ENGINE_OPTIONS = {
         "pool_pre_ping": True,
         "pool_recycle": 300,
-        "pool_size": 5,      # Keep 5 connections open
-        "max_overflow": 10   # Allow up to 10 more if needed
     }
+
+    # Only add pool_size/max_overflow for Postgres/MySQL
+    if not DATABASE_URL.startswith("sqlite"):
+        SQLALCHEMY_ENGINE_OPTIONS["pool_size"] = 5
+        SQLALCHEMY_ENGINE_OPTIONS["max_overflow"] = 10
 
     # Celery / Redis
     # Render provides REDIS_URL, we map it to Celery if simple config
