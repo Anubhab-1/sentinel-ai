@@ -737,6 +737,20 @@ def get_stats():
 def dashboard():
     return render_template('dashboard.html')
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('error.html', error_code="404", error_message="Page Not Found"), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('error.html', error_code="500", error_message="Internal Server Error"), 500
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5002)
+    # Ensure tables exist
+    with app.app_context():
+        try:
+            db.create_all()
+        except Exception:
+            pass
+
+    app.run(debug=True, port=5000)
