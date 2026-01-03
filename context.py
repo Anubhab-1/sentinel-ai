@@ -1,5 +1,5 @@
 def adjust_severity(finding, metadata):
-    header = finding["header"]
+    header = finding.get("header")
     severity = finding["severity"]
     reasons = finding.get("reasons", [])
 
