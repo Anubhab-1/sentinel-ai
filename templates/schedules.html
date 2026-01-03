@@ -1,40 +1,106 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Manage Schedules - Sentinel</title>
-    <link rel="stylesheet" href="/static/style.css">
-  </head>
-  <body>
-    <div class="container">
-      <header>
-        <h1>Manage Scheduled Scans</h1>
-        <p>Create, update, and delete recurring scan schedules.</p>
-        <a href="/">← Back to Dashboard</a>
-      </header>
 
-      <section id="create">
-        <h2>Create Schedule</h2>
-        <form id="create-form">
-          <input type="text" id="url" placeholder="https://example.com" required />
-          <input type="number" id="interval" value="60" min="1" required />
-          <button type="submit">Create</button>
-        </form>
-        <div id="create-result"></div>
-      </section>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manage Schedules - Sentinel</title>
+</head>
 
-      <section id="list">
-        <h2>Existing Schedules</h2>
-        <table id="schedules-table">
-          <thead>
-            <tr><th>ID</th><th>URL</th><th>Interval (min)</th><th>Enabled</th><th>Last Run</th><th>Actions</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </section>
+<body>
+  {% extends "base.html" %}
+
+  {% block content %}
+  <div class="bg-grid-pattern"></div>
+  <div class="bg-glow-orb" style="top: 20%; left: 10%;"></div>
+
+  <div class="container mx-auto px-4 py-12 relative z-10">
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row items-center justify-between mb-12 fade-in">
+      <div>
+        <h1 class="text-4xl font-bold text-white mb-2">Automation Matrix</h1>
+        <p class="text-gray-400 font-mono text-sm">SCHEDULED_OPS // RECURRING_SCANS</p>
+      </div>
+      <a href="{{ url_for('dashboard') }}" class="btn-cyber px-6 py-2 rounded mt-4 md:mt-0 flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12"></path>
+        </svg>
+        Return to Dashboard
+      </a>
     </div>
 
-    <script src="/static/schedules.js"></script>
-  </body>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 fade-in">
+
+      <!-- Create Form -->
+      <div class="lg:col-span-1">
+        <div class="glass-card sticky top-24">
+          <h2 class="text-xl font-bold text-white mb-6 border-b border-gray-700 pb-2 flex items-center gap-2">
+            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+              </path>
+            </svg>
+            New Schedule
+          </h2>
+          <form id="create-form" class="space-y-4">
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-gray-400 mb-1">Target URL</label>
+              <input type="text" id="url" placeholder="https://example.com"
+                class="w-full bg-slate-900/50 border border-slate-700 text-white rounded p-3 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors font-mono text-sm"
+                required />
+            </div>
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-gray-400 mb-1">Frequency (Minutes)</label>
+              <input type="number" id="interval" value="60" min="1"
+                class="w-full bg-slate-900/50 border border-slate-700 text-white rounded p-3 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors font-mono text-sm"
+                required />
+            </div>
+
+            <button type="submit"
+              class="btn-cyber w-full py-3 rounded mt-4 flex justify-center items-center gap-2 group">
+              <span>Deploy Agent</span>
+              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z">
+                </path>
+              </svg>
+            </button>
+            <div id="create-result" class="text-sm mt-3 text-center"></div>
+          </form>
+        </div>
+      </div>
+
+      <!-- List -->
+      <div class="lg:col-span-2">
+        <div class="glass-card">
+          <h2 class="text-xl font-bold text-white mb-6 border-b border-gray-700 pb-2">Active Protocols</h2>
+          <div class="overflow-x-auto">
+            <table id="schedules-table" class="w-full text-left border-collapse">
+              <thead>
+                <tr class="text-gray-400 border-b border-gray-700 text-xs uppercase tracking-wider">
+                  <th class="p-3">ID</th>
+                  <th class="p-3">Target Node</th>
+                  <th class="p-3">Interval</th>
+                  <th class="p-3">Status</th>
+                  <th class="p-3">Last Execution</th>
+                  <th class="p-3 text-right">Controls</th>
+                </tr>
+              </thead>
+              <tbody class="text-sm divide-y divide-gray-700/50 font-mono text-gray-300">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- We keep the existing logic script but might need to check if it has hardcoded DOM IDs that match -->
+  <script src="/static/schedules.js"></script>
+  {% endblock %}
+</body>
+
 </html>

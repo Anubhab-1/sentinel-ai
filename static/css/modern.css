@@ -1,0 +1,217 @@
+/* 
+   SENTINEL AI - MODERN DESIGN SYSTEM 
+   Theme: Cyberpunk / Glassmorphism / Dark Future
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+:root {
+    --color-bg-dark: #0f172a;
+    /* Slate 900 */
+    --color-bg-darker: #020617;
+    /* Slate 950 */
+    --color-primary: #00f0ff;
+    /* Cyber Cyan */
+    --color-primary-dim: #00f0ff20;
+    --color-secondary: #7000ff;
+    /* Neon Purple */
+    --color-accent: #ff0055;
+    /* Radium Red */
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-bg: rgba(15, 23, 42, 0.6);
+    --glass-blur: 12px;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--color-bg-darker);
+    color: #e2e8f0;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* --- ANIMATED BACKGROUND --- */
+.bg-grid-pattern {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background-image:
+        linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+    pointer-events: none;
+}
+
+.bg-glow-orb {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0, 240, 255, 0.15) 0%, transparent 70%);
+    filter: blur(80px);
+    z-index: -1;
+    animation: floatOrb 10s infinite ease-in-out;
+}
+
+@keyframes floatOrb {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(50px, -50px);
+    }
+}
+
+/* --- GLASSMORPHISM COMPONENTS --- */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-card {
+    @apply glass-panel rounded-xl p-6 transition-all duration-300;
+}
+
+.glass-card:hover {
+    border-color: rgba(0, 240, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+/* --- TYPOGRAPHY --- */
+h1,
+h2,
+h3,
+.font-heading {
+    letter-spacing: -0.02em;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, #fff 0%, var(--color-primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.font-mono {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* --- BUTTONS --- */
+.btn-cyber {
+    position: relative;
+    overflow: hidden;
+    background: transparent;
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.btn-cyber::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--color-primary);
+    transition: all 0.3s ease;
+    z-index: -1;
+}
+
+.btn-cyber:hover::before {
+    left: 0;
+}
+
+.btn-cyber:hover {
+    color: #000;
+    box-shadow: 0 0 20px var(--color-primary);
+}
+
+.btn-neon-pulse {
+    animation: neonPulse 2s infinite;
+}
+
+@keyframes neonPulse {
+    0% {
+        box-shadow: 0 0 5px var(--color-primary-dim);
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+    }
+
+    100% {
+        box-shadow: 0 0 5px var(--color-primary-dim);
+    }
+}
+
+/* --- FORMS --- */
+.input-cyber {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    color: white;
+    transition: all 0.3s;
+}
+
+.input-cyber:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 10px var(--color-primary-dim);
+    outline: none;
+}
+
+/* --- UTILITIES --- */
+.htmx-indicator {
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+
+.htmx-request .htmx-indicator {
+    opacity: 1;
+}
+
+.htmx-request.htmx-indicator {
+    opacity: 1;
+}
+
+/* Fade In Animation */
+.fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loader */
+.cyber-loader {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--color-primary);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

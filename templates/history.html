@@ -4,78 +4,106 @@
 <head>
     <meta charset="UTF-8">
     <title>Scan History | Sentinel-AI</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
+    {% extends "base.html" %}
 
-    <div class="container">
-        <header>
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <img src="/static/logo.jpg" alt="RakshaNetra Logo" class="logo">
-                <h1>Scan History</h1>
+    {% block content %}
+    <div class="bg-grid-pattern"></div>
+    <div class="bg-glow-orb" style="top: 0; right: 0; opacity: 0.3;"></div>
+
+    <div class="container mx-auto px-4 py-12 relative z-10">
+
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row items-center justify-between mb-12 fade-in">
+            <div>
+                <h1 class="text-4xl font-bold text-white mb-2">Operation Logs</h1>
+                <p class="text-gray-400 font-mono text-sm">ARCHIVE // RECENT_SCANS</p>
             </div>
-            <a href="{{ url_for('index') }}" class="history-btn">← Back to Scanner</a>
-        </header>
+            <a href="{{ url_for('index') }}" class="btn-cyber px-6 py-2 rounded mt-4 md:mt-0 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 17l-5-5m0 0l5-5m-5 5h12"></path>
+                </svg>
+                Return to Scanner
+            </a>
+        </div>
 
-        <div class="card" style="margin-bottom: 30px; background: #111827;">
-            <h3 style="margin-bottom: 20px;">Risk Trend Analysis</h3>
-            <canvas id="riskChart" style="max-height: 200px;"></canvas>
+        <!-- Trend Chart -->
+        <div class="glass-card mb-12 fade-in">
+            <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6 border-b border-gray-700 pb-2">
+                Risk Trend Analysis</h3>
+            <div class="h-64">
+                <canvas id="riskChart"></canvas>
+            </div>
         </div>
 
         {% if scans %}
-        <div class="history-list">
+        <div class="grid grid-cols-1 gap-6 fade-in" style="animation-delay: 0.2s;">
             {% for scan in scans %}
-            <div class="card">
-                <div
-                    style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                    <h3 style="word-break: break-all;">{{ scan["url"] }}</h3>
+            <div class="glass-card group hover:border-primary/50 transition-colors">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
 
+                    <!-- Info -->
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                            <h3 class="text-xl font-bold text-white font-mono">{{ scan["url"] }}</h3>
+                        </div>
+                        <div class="text-sm text-gray-500 mt-1 font-mono">ID: {{ scan["tasks_id"] or 'MANUAL' }} | {{
+                            scan["created_at"] }}</div>
+                    </div>
+
+                    <!-- Badge -->
                     {% set score = scan['risk_score'] %}
                     {% if score > 60 %}
-                    {% set label = 'CRITICAL' %}
-                    {% set badge_class = 'high' %}
+                    <div
+                        class="px-4 py-2 rounded border border-red-500/50 bg-red-500/10 text-red-400 font-bold font-mono">
+                        {{ score }}/100 CRITICAL
+                    </div>
                     {% elif score > 30 %}
-                    {% set label = 'MODERATE' %}
-                    {% set badge_class = 'medium' %}
+                    <div
+                        class="px-4 py-2 rounded border border-orange-500/50 bg-orange-500/10 text-orange-400 font-bold font-mono">
+                        {{ score }}/100 MODERATE
+                    </div>
                     {% else %}
-                    {% set label = 'SECURE' %}
-                    {% set badge_class = 'low' %}
+                    <div
+                        class="px-4 py-2 rounded border border-emerald-500/50 bg-emerald-500/10 text-emerald-400 font-bold font-mono">
+                        {{ score }}/100 SECURE
+                    </div>
                     {% endif %}
-
-                    <span class="badge {{ badge_class }}">
-                        {{ score }}/100 {{ label }}
-                    </span>
                 </div>
 
-                <small style="display:block; margin-top:5px; opacity:0.7">Date: {{ scan["created_at"] }}</small>
-
-                <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
-                    <a href="{{ url_for('compare', url=scan['url']) }}" class="btn-secondary" style="flex: 1;">
-                        🔍 Compare
+                <!-- Actions -->
+                <div class="mt-6 pt-6 border-t border-gray-800 flex gap-4">
+                    <a href="{{ url_for('compare', url=scan['url']) }}"
+                        class="flex-1 text-center py-2 rounded border border-gray-600 hover:border-primary hover:text-primary transition-colors text-sm font-medium">
+                        🔍 Compare Previous
                     </a>
-
-                    <a href="{{ url_for('download_pdf', scan_id=scan['id']) }}" class="btn-accent" style="flex: 1;">
-                        📄 Download PDF
+                    <a href="{{ url_for('download_pdf', scan_id=scan['id']) }}"
+                        class="flex-1 text-center py-2 rounded bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 transition-colors text-sm font-medium">
+                        📄 Download Report
                     </a>
                 </div>
             </div>
             {% endfor %}
         </div>
         {% else %}
-        <div class="card" style="text-align: center; padding: 40px;">
-            <p>No scans found. Start by scanning a website!</p>
-            <a href="{{ url_for('index') }}">Go to Scanner</a>
+        <div class="glass-card text-center py-20">
+            <div class="inline-block p-6 rounded-full bg-gray-800 mb-4">
+                <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                    </path>
+                </svg>
+            </div>
+            <h3 class="text-xl text-white font-bold mb-2">No Records Found</h3>
+            <p class="text-gray-400 mb-6">The database is empty. Initiate a scan to populate this archive.</p>
+            <a href="{{ url_for('index') }}" class="btn-cyber px-8 py-3 rounded inline-block">Initiate Scan</a>
         </div>
         {% endif %}
-    </div>
 
-    </div>
-
-    <div
-        style="text-align: center; margin-top: 50px; margin-bottom: 30px; opacity: 0.5; font-size: 12px; letter-spacing: 1px;">
-        POWERED BY <b>RAKSHANETRA™</b>
     </div>
 
     <script id="chart-data" type="application/json">
@@ -87,31 +115,33 @@
 
     <script>
         const ctx = document.getElementById("riskChart").getContext("2d");
+        const chartData = JSON.parse(document.getElementById("chart-data").textContent);
 
-        // Parsing the JSON data passed from app.py
-        const chartData = JSON.parse(
-            document.getElementById("chart-data").textContent
-        );
-
-        const labels = chartData.labels;
-        const dataPoints = chartData.scores;
+        // Modern Gradient
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(0, 240, 255, 0.2)');
+        gradient.addColorStop(1, 'rgba(0, 240, 255, 0)');
 
         new Chart(ctx, {
             type: "line",
             data: {
-                labels: labels,
+                labels: chartData.labels,
                 datasets: [{
                     label: "Risk Score",
-                    data: dataPoints,
-                    borderColor: "#38bdf8",
-                    backgroundColor: "rgba(56, 189, 248, 0.1)",
-                    borderWidth: 3,
-                    tension: 0.3,
+                    data: chartData.scores,
+                    borderColor: "#00f0ff",
+                    backgroundColor: gradient,
+                    borderWidth: 2,
+                    pointBackgroundColor: "#020617",
+                    pointBorderColor: "#00f0ff",
+                    pointHoverRadius: 6,
+                    tension: 0.4,
                     fill: true
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false }
                 },
@@ -119,18 +149,18 @@
                     y: {
                         beginAtZero: true,
                         max: 100,
-                        ticks: { color: "#9ca3af" },
-                        grid: { color: "#1f2937" }
+                        grid: { color: "rgba(255, 255, 255, 0.05)" },
+                        ticks: { color: "#64748b", font: { family: "'Outfit', sans-serif" } }
                     },
                     x: {
-                        ticks: { color: "#9ca3af" },
-                        grid: { display: false }
+                        grid: { display: false },
+                        ticks: { color: "#64748b", font: { family: "'Outfit', sans-serif" } }
                     }
                 }
             }
         });
     </script>
-
+    {% endblock %}
 </body>
 
 </html>

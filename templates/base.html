@@ -17,9 +17,23 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/css/modern.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+
 
     <!-- Tailwind CSS (CDN for Dashboard) -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Libraries (HTMX + Alpine) -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -38,33 +52,43 @@
 <body class="bg-gray-900 text-white font-sans antialiased">
 
     <!-- Navigation -->
-    <nav class="bg-gray-800 border-b border-gray-700">
+    <nav class="glass-panel sticky top-0 z-50 border-b-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
+            <div class="flex items-center justify-between h-20">
                 <!-- Logo -->
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <img class="h-8 w-8 rounded mr-2" src="/static/logo.jpg" alt="Logo">
+                <a href="/" class="flex items-center group">
+                    <div class="relative">
+                        <div
+                            class="absolute -inset-1 bg-primary blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200">
+                        </div>
+                        <img class="relative h-10 w-10 rounded-lg" src="/static/logo.jpg" alt="Logo">
                     </div>
-                    <div>
-                        <div class="text-xl font-bold text-primary">SENTINEL AI</div>
+                    <div class="ml-3">
+                        <div
+                            class="text-2xl font-bold font-heading text-white tracking-wider group-hover:text-primary transition-colors">
+                            SENTINEL_AI</div>
+                        <div class="text-[10px] text-gray-400 font-mono tracking-[0.2em] uppercase">Security Mainframe
+                        </div>
                     </div>
-                </div>
+                </a>
 
                 <!-- Links -->
                 <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="/" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Scanner</a>
+                    <div class="ml-10 flex items-baseline space-x-6">
+                        <a href="/"
+                            class="text-sm font-medium text-gray-300 hover:text-primary hover:shadow-[0_0_15px_rgba(0,240,255,0.5)] transition-all px-4 py-2 rounded-lg">Scanner</a>
                         {% if current_user.is_authenticated %}
                         <a href="{{ url_for('dashboard') }}"
-                            class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Dashboard</a>
+                            class="text-sm font-medium text-gray-300 hover:text-primary hover:shadow-[0_0_15px_rgba(0,240,255,0.5)] transition-all px-4 py-2 rounded-lg">Dashboard</a>
                         <a href="{{ url_for('history') }}"
-                            class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">History</a>
+                            class="text-sm font-medium text-gray-300 hover:text-primary hover:shadow-[0_0_15px_rgba(0,240,255,0.5)] transition-all px-4 py-2 rounded-lg">History</a>
                         <a href="{{ url_for('auth.logout') }}"
-                            class="px-3 py-2 rounded-md text-sm font-medium text-red-400 hover:bg-gray-700">Logout</a>
+                            class="text-sm font-medium text-red-400 hover:text-red-300 border border-red-500/30 hover:border-red-500 hover:bg-red-500/10 transition-all px-4 py-2 rounded-lg">Logout</a>
                         {% else %}
                         <a href="{{ url_for('auth.login') }}"
-                            class="px-3 py-2 rounded-md text-sm font-medium bg-primary text-black hover:bg-cyan-400">Login</a>
+                            class="btn-cyber px-6 py-2 rounded text-sm relative overflow-hidden group">
+                            <span class="relative z-10 group-hover:text-black transition-colors">Login Access</span>
+                        </a>
                         {% endif %}
                     </div>
                 </div>

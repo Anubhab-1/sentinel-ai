@@ -1,134 +1,190 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Sentinel-AI Security Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="stylesheet" href="/static/style.css">
-    <script src="/static/script.js" defer></script>
-</head>
+{% block content %}
+<!-- Background FX -->
+<div class="bg-grid-pattern"></div>
+<div class="bg-glow-orb" style="top: 20%; left: 20%;"></div>
+<div class="bg-glow-orb"
+    style="bottom: 20%; right: 20%; animation-delay: -5s; background: radial-gradient(circle, rgba(112, 0, 255, 0.15) 0%, transparent 70%);">
+</div>
 
-<body>
+<div class="container mx-auto px-4 py-12 relative z-10">
 
-    <div class="container">
-        <header>
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <img src="/static/logo.jpg" alt="RakshaNetra Logo" class="logo">
-                <h1>Sentinel-AI</h1>
-            </div>
-            <div class="nav-links">
-                {% if current_user.is_authenticated %}
-                <span style="color: #64748b; margin-right: 15px;">{{ current_user.username }}</span>
-                <a href="{{ url_for('auth.logout') }}" class="history-btn" style="background: #374151;">Logout</a>
-                {% else %}
-                <a href="{{ url_for('auth.login') }}" class="history-btn">Login</a>
-                {% endif %}
-                <a href="{{ url_for('history') }}" class="history-btn">📜 History</a>
-                <a href="{{ url_for('dashboard') }}" class="history-btn" style="background: #4F46E5;">📊 Dashboard</a>
-            </div>
-        </header>
+    <!-- Hero Section -->
+    <div class="text-center mb-16 fade-in">
+        <h1 class="text-6xl font-bold font-heading mb-4 text-white tracking-tight">
+            <span class="text-gradient">SENTINEL AI</span>
+        </h1>
+        <p class="text-xl text-gray-400 max-w-2xl mx-auto font-light">
+            Next-Generation Neural Security Auditor.
+            <span class="text-primary opacity-80 block mt-2">Powered by RakshaNetra™</span>
+        </p>
+    </div>
 
-        <div class="scan-box">
-            <form id="scanForm" class="scan-form">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                <input type="url" id="urlInput" name="url" placeholder="https://example.com" required>
-                <button type="submit" id="scanBtn">Start Scan</button>
-            </form>
+    <!-- Scanner Card -->
+    <div class="glass-card max-w-3xl mx-auto mb-16 relative overflow-hidden">
+        <!-- Decoration Line -->
+        <div
+            class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50">
         </div>
 
-        <div id="loader" class="loader hidden">
-            <div class="spinner"></div>
-            <p>Analyzing security headers & vulnerability posture...</p>
-        </div>
-
-        <div id="resultsArea" class="hidden">
-
-            <div class="stats">
-                <div class="stat">
-                    <h3>Risk Score</h3>
-                    <p id="scoreVal">0/100</p>
+        <form id="scanForm" class="relative z-10 flex flex-col md:flex-row gap-4 items-center p-4">
+            <div class="flex-grow w-full relative group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-primary opacity-70 group-focus-within:opacity-100 transition-opacity"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
                 </div>
-
-                <div class="stat">
-                    <h3>Confidence</h3>
-                    <p><span id="confScore">0</span>% (<span id="confLevel">Low</span>)</p>
-                </div>
-
-                <div class="stat">
-                    <h3>Risks</h3>
-                    <p>
-                        <span id="highCount" style="color: var(--high)">0</span> High /
-                        <span id="medCount" style="color: var(--medium)">0</span> Med /
-                        <span id="lowCount" style="color: var(--low)">0</span> Low
-                    </p>
-                </div>
+                <input type="url" id="urlInput" name="url"
+                    class="w-full bg-slate-900/50 border border-slate-700 text-white rounded-lg pl-12 pr-4 py-4 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-mono placeholder-slate-500"
+                    placeholder="https://target-system.com" required>
             </div>
 
-            <!-- Download Button Area -->
-            <div id="reportAction" style="text-align: center; margin-bottom: 20px;"></div>
+            <button type="submit" id="scanBtn"
+                class="btn-cyber px-8 py-4 rounded-lg w-full md:w-auto whitespace-nowrap btn-neon-pulse flex items-center justify-center gap-2">
+                <span>Initiate Scan</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+            </button>
+        </form>
 
-            <div id="findingsList"></div>
-
+        <!-- Loader State -->
+        <div id="loader" class="hidden mt-8 text-center pb-4">
+            <div class="flex flex-col items-center justify-center gap-4">
+                <div class="cyber-loader"></div>
+                <div class="space-y-1">
+                    <p class="text-lg font-medium text-primary animate-pulse">Neural Engine Active</p>
+                    <p class="text-sm text-slate-400 font-mono">Analyzing vectors & headers...</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div style="text-align: center; margin-top: 50px; opacity: 0.5; font-size: 12px; letter-spacing: 1px;">
-        POWERED BY <b>RAKSHANETRA™</b>
+    <!-- Results Area -->
+    <div id="resultsArea" class="hidden max-w-6xl mx-auto fade-in">
+
+        <!-- Dashboard Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <!-- Risk Score -->
+            <div class="glass-card flex flex-col items-center justify-center text-center group hover:bg-white/5">
+                <h3 class="text-slate-400 text-sm uppercase tracking-wider mb-2">Risk Score</h3>
+                <div class="relative">
+                    <svg class="w-32 h-32 transform -rotate-90">
+                        <circle cx="64" cy="64" r="60" stroke="#1e293b" stroke-width="8" fill="transparent" />
+                        <circle id="scoreRing" cx="64" cy="64" r="60" stroke="var(--color-primary)" stroke-width="8"
+                            fill="transparent" stroke-dasharray="377" stroke-dashoffset="377"
+                            class="transition-all duration-1000 ease-out" />
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span id="scoreVal" class="text-4xl font-bold text-white font-mono">0</span>
+                    </div>
+                </div>
+                <div id="riskLabel" class="mt-4 px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-white">SECURE
+                </div>
+            </div>
+
+            <!-- AI Confidence -->
+            <div class="glass-card flex flex-col items-center justify-center group">
+                <h3 class="text-slate-400 text-sm uppercase tracking-wider mb-4">AI Confidence</h3>
+                <div class="text-5xl font-bold text-secondary mb-2"><span id="confScore">0</span>%</div>
+                <div class="text-sm text-slate-400">Level: <span id="confLevel" class="text-white">Low</span></div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full mt-6 overflow-hidden">
+                    <div id="confBar" class="h-full bg-secondary transition-all duration-1000" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Vulnerability Breakdown -->
+            <div class="glass-card flex flex-col justify-center">
+                <h3 class="text-slate-400 text-sm uppercase tracking-wider mb-6 text-center">Threat Vectors</h3>
+                <div class="space-y-4 px-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-red-400 font-mono">HIGH</span>
+                        <span id="highCount"
+                            class="text-xl font-bold text-white bg-red-500/10 px-3 py-1 rounded">0</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-orange-400 font-mono">MEDIUM</span>
+                        <span id="medCount"
+                            class="text-xl font-bold text-white bg-orange-500/10 px-3 py-1 rounded">0</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-emerald-400 font-mono">LOW</span>
+                        <span id="lowCount"
+                            class="text-xl font-bold text-white bg-emerald-500/10 px-3 py-1 rounded">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Download Action -->
+        <div id="reportAction" class="text-center mb-12">
+            <!-- Injected via JS -->
+        </div>
+
+        <!-- Detailed Findings -->
+        <h2 class="text-2xl font-bold mb-8 pl-4 border-l-4 border-primary text-white">Security Analysis</h2>
+        <div id="findingsList" class="space-y-6">
+            <!-- Cards injected here -->
+        </div>
+
     </div>
 
-    <script>
-        // Polling Logic for Celery Task
-        document.getElementById("scanForm").addEventListener("submit", async function (e) {
-            e.preventDefault();
+</div>
 
-            const url = document.getElementById("urlInput").value;
-            const btn = document.getElementById("scanBtn");
-            const loader = document.getElementById("loader");
-            const results = document.getElementById("resultsArea");
-            const list = document.getElementById("findingsList");
-            const statusText = document.querySelector("#loader p");
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+<!-- Logic -->
+<script>
+    // Using strict mode for cleaner code
+    'use strict';
 
-            // UI Loading State
-            btn.disabled = true;
-            btn.innerText = "Scanning...";
-            loader.classList.remove("hidden");
-            results.classList.add("hidden");
-            list.innerHTML = "";
-            statusText.innerText = "Starting Scan...";
+    document.getElementById("scanForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
 
+        const url = document.getElementById("urlInput").value;
+        const btn = document.getElementById("scanBtn");
+        const loader = document.getElementById("loader");
+        const results = document.getElementById("resultsArea");
+        const list = document.getElementById("findingsList");
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        // UI Loading State
+        btn.disabled = true;
+        btn.innerHTML = `<div class="cyber-loader w-5 h-5 border-2"></div><span class="ml-2">Scanning...</span>`;
+        loader.classList.remove("hidden");
+        results.classList.add("hidden");
+        list.innerHTML = "";
+
+        try {
+            const response = await fetch("/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                body: JSON.stringify({ url: url })
+            });
+
+            if (!response.ok) throw new Error("Server communication failed");
+            const data = await response.json();
+
+            if (data.error) throw new Error(data.error);
+
+            // Start Polling
+            pollStatus(data.task_id);
+
+        } catch (err) {
+            alert("Error: " + err.message);
+            resetUI();
+        }
+    });
+
+    function pollStatus(taskId) {
+        const statusMsg = document.querySelector("#loader p.text-mono");
+        const interval = setInterval(async () => {
             try {
-                // 1. Trigger Task
-                const response = await fetch("/", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": csrfToken
-                    },
-                    body: JSON.stringify({ url: url })
-                });
-
-                if (!response.ok) throw new Error("Server Error");
-                const data = await response.json();
-
-                if (data.error) throw new Error(data.error);
-
-                // 2. Poll for Status
-                const taskId = data.task_id;
-                pollStatus(taskId);
-
-            } catch (err) {
-                alert(err.message);
-                resetUI();
-            }
-        });
-
-        function pollStatus(taskId) {
-            const statusText = document.querySelector("#loader p");
-
-            const interval = setInterval(async () => {
                 const res = await fetch(`/status/${taskId}`);
                 const data = await res.json();
 
@@ -141,124 +197,165 @@
                     alert("Scan Failed: " + data.status);
                     resetUI();
                 } else {
-                    // Update Loading Text
-                    statusText.innerText = data.status || "Processing...";
+                    // Update Loading Text (Optional: Add jitter effect or log lines)
                 }
-            }, 2000);
+            } catch (e) {
+                clearInterval(interval);
+                resetUI();
+            }
+        }, 2000);
+    }
+
+    function resetUI() {
+        const btn = document.getElementById("scanBtn");
+        btn.disabled = false;
+        btn.innerHTML = `<span>Initiate Scan</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>`;
+        document.getElementById("loader").classList.add("hidden");
+    }
+
+    function renderResults(data) {
+        // 1. Update Scores with Animation
+        const scoreVal = document.getElementById("scoreVal");
+        const riskLabel = document.getElementById("riskLabel");
+
+        scoreVal.innerText = data.risk_score;
+
+        // Circular Progress
+        const circle = document.getElementById("scoreRing");
+        const radius = circle.r.baseVal.value;
+        const circumference = radius * 2 * Math.PI;
+        const offset = circumference - (data.risk_score / 100) * circumference;
+        circle.style.strokeDashoffset = offset;
+
+        // Color Logic
+        let sentiment = "text-emerald-400";
+        if (data.risk_score > 60) {
+            sentiment = "text-red-500";
+            circle.style.stroke = "#ef4444";
+            riskLabel.className = "mt-4 px-3 py-1 rounded-full text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/50";
+            riskLabel.innerText = "CRITICAL VULNERABILITY";
+        } else if (data.risk_score > 30) {
+            sentiment = "text-orange-400";
+            circle.style.stroke = "#f97316";
+            riskLabel.className = "mt-4 px-3 py-1 rounded-full text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/50";
+            riskLabel.innerText = "MODERATE RISK";
+        } else {
+            circle.style.stroke = "#10b981";
+            riskLabel.className = "mt-4 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/50";
+            riskLabel.innerText = "SYSTEM SECURE";
         }
 
-        function resetUI() {
-            document.getElementById("scanBtn").disabled = false;
-            document.getElementById("scanBtn").innerText = "Start Scan";
-            document.getElementById("loader").classList.add("hidden");
-        }
+        // 2. Confidence
+        document.getElementById("confScore").innerText = data.confidence_score || 85;
+        document.getElementById("confBar").style.width = (data.confidence_score || 85) + "%";
 
-        function renderResults(data) {
-            // Update Stats
-            // Render Score with Label
-            let riskLabel = "Secure";
-            let color = "var(--low)";
-            if (data.risk_score > 60) { riskLabel = "Critical Risk"; color = "var(--high)"; }
-            else if (data.risk_score > 30) { riskLabel = "Moderate Risk"; color = "var(--medium)"; }
+        // 3. Counts
+        document.getElementById("highCount").innerText = data.summary.High;
+        document.getElementById("medCount").innerText = data.summary.Medium;
+        document.getElementById("lowCount").innerText = data.summary.Low;
 
-            document.getElementById("scoreVal").innerHTML = `
-                <span style="color:${color}">${data.risk_score}/100</span>
-                <div style="font-size:14px; color:${color}; margin-top:5px; text-transform:uppercase; letter-spacing:1px;">${riskLabel}</div>
+        // 4. Download
+        const reportArea = document.getElementById("reportAction");
+        if (data.scan_id) {
+            reportArea.innerHTML = `
+                <a href="/download/${data.scan_id}" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg transition-colors text-white font-mono text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Download Comprehensive Report (PDF)
+                </a>
             `;
-            document.getElementById("confScore").innerText = data.confidence_score || 0;
-            document.getElementById("confLevel").innerText = data.confidence_level || "Low";
+        }
 
-            document.getElementById("highCount").innerText = data.summary.High;
-            document.getElementById("medCount").innerText = data.summary.Medium;
-            document.getElementById("lowCount").innerText = data.summary.Low;
+        // 5. Findings List
+        const list = document.getElementById("findingsList");
+        list.innerHTML = "";
 
-            document.getElementById("lowCount").innerText = data.summary.Low;
+        data.findings.forEach((f, index) => {
+            const div = document.createElement("div");
+            // Determine border color
+            let borderClass = "border-emerald-500/30";
+            let bgClass = "bg-emerald-500/5";
+            let badgeClass = "bg-emerald-500/20 text-emerald-300";
 
-            // SHOW DOWNLOAD BUTTON
-            if (data.scan_id) {
-                document.getElementById("reportAction").innerHTML = `
-                    <a href="/download/${data.scan_id}" class="download-btn" target="_blank">
-                        📄 Download PDF Report
-                    </a>
-                `;
+            if (f.severity === 'High') {
+                borderClass = "border-red-500/50";
+                bgClass = "bg-red-500/5";
+                badgeClass = "bg-red-500/20 text-red-300";
+            } else if (f.severity === 'Medium') {
+                borderClass = "border-orange-500/40";
+                bgClass = "bg-orange-500/5";
+                badgeClass = "bg-orange-500/20 text-orange-300";
             }
 
-            const list = document.getElementById("findingsList");
-            list.innerHTML = "";
+            div.className = `glass-card border-l-4 ${borderClass} flex flex-col md:flex-row gap-6 hover:translate-x-1 transition-transform`;
 
-            // Render Findings Cards
-            data.findings.forEach((f, index) => {
-                const div = document.createElement("div");
-                div.className = `card ${f.severity.toLowerCase()}`;
+            div.innerHTML = `
+                <div class="flex-grow">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="px-2 py-1 rounded text-xs font-bold uppercase tracking-wider ${badgeClass}">${f.severity}</span>
+                        <h4 class="text-xl font-bold text-white">${f.issue}</h4>
+                    </div>
+                    <p class="text-slate-400 text-sm mb-4 leading-relaxed">
+                        Potential vulnerability detected. 
+                        ${f.reasons ? f.reasons[0] : ''}
+                    </p>
+                    
+                    <div class="bg-slate-900/50 p-4 rounded-lg border border-slate-700/50 mb-4">
+                        <h5 class="text-xs font-bold text-primary mb-2 uppercase">Remediation Strategy</h5>
+                        <p class="text-sm text-slate-300 font-mono">${f.recommendation || "Check OWASP guidelines."}</p>
+                    </div>
 
-                div.innerHTML = `
-            <h4>${f.issue}</h4>
-            <p><b>Severity:</b> ${f.severity}</p>
-            <p><b>Why it matters:</b></p>
-            
-            <div id="explanation-${index}" class="explanation"></div>
-            
-            <button 
-                class="explain-btn" 
-                onclick='handleExplain(this)' 
-                data-index="${index}" 
-                data-issue='${JSON.stringify(f.issue)}' 
-                data-severity='${JSON.stringify(f.severity)}' 
-                data-reasons='${JSON.stringify(f.reasons)}'>
-                🤖 Explain with AI
-            </button>
+                    <div id="explanation-${index}" class="text-sm text-slate-400 italic border-l-2 border-slate-700 pl-4 my-4 empty:hidden"></div>
+                </div>
 
-            <p style="margin-top:15px">
-                <b>How to fix:</b><br>
-                ${f.recommendation || "Check OWASP guidelines."}
-            </p>
-        `;
-                list.appendChild(div);
-            });
+                <div class="flex-shrink-0 flex flex-col justify-start">
+                    <button 
+                        class="btn-cyber text-xs px-4 py-2 rounded flex items-center gap-2" 
+                        onclick='handleExplain(this)' 
+                        data-index="${index}" 
+                        data-issue='${JSON.stringify(f.issue)}' 
+                        data-severity='${JSON.stringify(f.severity)}' 
+                        data-reasons='${JSON.stringify(f.reasons)}'>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                        Explain with AI
+                    </button>
+                    ${f.reference_url ? `<a href="${f.reference_url}" target="_blank" class="mt-2 text-xs text-center text-slate-500 hover:text-white transition-colors">OWASP Reference &rarr;</a>` : ''}
+                </div>
+            `;
+            list.appendChild(div);
+        });
 
-            document.getElementById("resultsArea").classList.remove("hidden");
-        }
+        document.getElementById("resultsArea").classList.remove("hidden");
+    }
 
-        // Reuse your AI Explain logic
-        function handleExplain(button) {
-            const index = button.dataset.index;
-            const issue = JSON.parse(button.dataset.issue);
-            const severity = JSON.parse(button.dataset.severity);
-            const reasons = JSON.parse(button.dataset.reasons);
-            const box = document.getElementById(`explanation-${index}`);
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    // Reuse AI Logic
+    function handleExplain(button) {
+        const index = button.dataset.index;
+        const box = document.getElementById(`explanation-${index}`);
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            if (box.dataset.loading === "true") return;
-            box.dataset.loading = "true";
-            box.innerText = "Generating explanation...";
+        if (button.dataset.loading === "true") return;
+        button.dataset.loading = "true";
+        button.innerHTML = "Generating...";
 
-            fetch("/explain", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": csrfToken
-                },
-                body: JSON.stringify({ issue, severity, reasons })
+        fetch("/explain", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
+            body: JSON.stringify({
+                issue: JSON.parse(button.dataset.issue),
+                severity: JSON.parse(button.dataset.severity),
+                reasons: JSON.parse(button.dataset.reasons)
             })
-                .then(async res => {
-                    if (!res.ok) {
-                        const text = await res.text();
-                        throw new Error(`Error ${res.status}: ${text.slice(0, 100)}`);
-                    }
-                    return res.json();
-                })
-                .then(data => {
-                    box.innerText = data.explanation;
-                    box.dataset.loading = "false";
-                })
-                .catch(err => {
-                    console.error(err);
-                    box.innerText = `⚠️ Failed: ${err.message}`;
-                    box.dataset.loading = "false";
-                });
-        }
-    </script>
-
-</body>
-
-</html>
+        })
+            .then(res => res.json())
+            .then(data => {
+                box.innerText = data.explanation;
+                box.classList.remove("hidden");
+                button.innerText = "Regenerate Info";
+                button.dataset.loading = "false";
+            })
+            .catch(err => {
+                box.innerText = "AI Service Unavailable";
+            });
+    }
+</script>
+{% endblock %}
