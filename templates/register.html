@@ -1,115 +1,79 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register | Sentinel-AI</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <style>
-        .auth-container {
-            max-width: 400px;
-            margin: 60px auto;
-            padding: 30px;
-            background: #111827;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            width: 90%;
-        }
+{% block title %}Register | Sentinel-AI{% endblock %}
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+{% block content %}
+<div class="bg-grid-pattern"></div>
+<div class="bg-glow-orb" style="top: 20%; right: 30%;"></div>
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #ccc;
-        }
+<div class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="glass-card max-w-md w-full space-y-8 fade-in">
+        <div class="text-center">
+            <h2 class="mt-6 text-3xl font-bold font-heading text-white tracking-tight">
+                New User Entry
+            </h2>
+            <p class="mt-2 text-sm text-gray-400 font-mono">
+                // CREATE_PROFILE
+            </p>
+        </div>
 
-        input {
-            width: 100%;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #374151;
-            background: #1f2937;
-            color: white;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #00f0ff;
-            color: #000;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background: #00bcd4;
-        }
-
-        .flash {
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .logo-auth {
-            height: 60px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
-        }
-    </style>
-</head>
-
-<body>
-    <div class="container">
-        <header style="text-align: center; margin-bottom: 20px; border:none;">
-            <a href="/" style="text-decoration:none; display:flex; flex-direction:column; align-items:center;">
-                <img src="/static/logo.jpg" alt="Logo" class="logo-auth">
-                <h1 style="color: #00f0ff; margin:0; font-size:28px;">SENTINEL AI</h1>
-            </a>
-        </header>
-
-        <div class="auth-container">
-            <h2 style="text-align: center; margin-bottom: 30px;">Create Account</h2>
-
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="space-y-2">
             {% for message in messages %}
-            <div class="flash">{{ message }}</div>
+            <div class="bg-red-500/10 border border-red-500/50 text-red-200 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline">{{ message }}</span>
+            </div>
             {% endfor %}
-            {% endif %}
-            {% endwith %}
+        </div>
+        {% endif %}
+        {% endwith %}
 
-            <form method="POST">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                <div class="form-group">
-                    <label>Username</label>
-                    <input type="text" name="username" required>
+        <form class="mt-8 space-y-6" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+            <div class="space-y-4">
+                <div>
+                    <label for="username" class="sr-only">Username</label>
+                    <input id="username" name="username" type="text" required
+                        class="input-cyber appearance-none rounded-none relative block w-full px-3 py-3 placeholder-gray-500 rounded-t-md focus:z-10 sm:text-sm font-mono"
+                        placeholder="Codename / Username">
                 </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" name="email" required>
+                <div>
+                    <label for="email" class="sr-only">Email address</label>
+                    <input id="email" name="email" type="email" autocomplete="email" required
+                        class="input-cyber appearance-none relative block w-full px-3 py-3 placeholder-gray-500 focus:z-10 sm:text-sm font-mono border-t-0 border-b-0"
+                        placeholder="Contact Email">
                 </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" required>
+                <div>
+                    <label for="password" class="sr-only">Password</label>
+                    <input id="password" name="password" type="password" autocomplete="new-password" required
+                        class="input-cyber appearance-none rounded-none relative block w-full px-3 py-3 placeholder-gray-500 rounded-b-md focus:z-10 sm:text-sm font-mono"
+                        placeholder="Secret Key">
                 </div>
-                <button type="submit">Sign Up</button>
-            </form>
-            <p style="text-align: center; margin-top: 20px; font-size: 0.9em; color: #888;">
-                Already have an account? <a href="{{ url_for('auth.login') }}" style="color: #00f0ff;">Login</a>
+            </div>
+
+            <div>
+                <button type="submit"
+                    class="btn-cyber w-full flex justify-center py-3 px-4 border border-transparent text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                        <svg class="h-5 w-5 text-cyan-300 group-hover:text-cyan-400" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+                        </svg>
+                    </span>
+                    Initialize Profile
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center mt-4">
+            <p class="text-xs text-gray-500 uppercase tracking-widest">
+                Existing Profile? <a href="{{ url_for('auth.login') }}"
+                    class="text-primary hover:text-white transition-colors">Login</a>
             </p>
         </div>
     </div>
-</body>
-
-</html>
+</div>
+{% endblock %}

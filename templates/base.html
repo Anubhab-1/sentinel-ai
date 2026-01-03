@@ -52,7 +52,7 @@
 <body class="bg-gray-900 text-white font-sans antialiased">
 
     <!-- Navigation -->
-    <nav class="glass-panel sticky top-0 z-50 border-b-0">
+    <nav class="glass-panel sticky top-0 z-50 border-b-0" x-data="{ mobileMenuOpen: false }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
                 <!-- Logo -->
@@ -65,14 +65,15 @@
                     </div>
                     <div class="ml-3">
                         <div
-                            class="text-2xl font-bold font-heading text-white tracking-wider group-hover:text-primary transition-colors">
+                            class="text-xl md:text-2xl font-bold font-heading text-white tracking-wider group-hover:text-primary transition-colors">
                             SENTINEL_AI</div>
-                        <div class="text-[10px] text-gray-400 font-mono tracking-[0.2em] uppercase">Security Mainframe
-                        </div>
+                        <div class="text-[10px] text-gray-400 font-mono tracking-[0.2em] uppercase hidden sm:block">
+                            Security
+                            Mainframe</div>
                     </div>
                 </a>
 
-                <!-- Links -->
+                <!-- Desktop Links -->
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-6">
                         <a href="/"
@@ -92,6 +93,52 @@
                         {% endif %}
                     </div>
                 </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="-mr-2 flex md:hidden">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" type="button"
+                        class="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                        aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <!-- Icon when menu is closed -->
+                        <svg x-show="!mobileMenuOpen" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <!-- Icon when menu is open -->
+                        <svg x-show="mobileMenuOpen" class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu, show/hide based on menu state. -->
+        <div class="md:hidden glass-panel border-t border-gray-700 absolute w-full" id="mobile-menu"
+            x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-100"
+            x-transition:enter-start="transform opacity-0 scale-95"
+            x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75"
+            x-transition:leave-start="transform opacity-100 scale-100"
+            x-transition:leave-end="transform opacity-0 scale-95">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="/"
+                    class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">Scanner</a>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('dashboard') }}"
+                    class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">Dashboard</a>
+                <a href="{{ url_for('history') }}"
+                    class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">History</a>
+                <a href="{{ url_for('auth.logout') }}"
+                    class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-red-400 hover:text-red-300 hover:bg-gray-700">Logout</a>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}"
+                    class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-primary hover:text-white hover:bg-gray-700">Login
+                    Access</a>
+                {% endif %}
             </div>
         </div>
     </nav>

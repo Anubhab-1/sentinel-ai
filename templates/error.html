@@ -1,39 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Error - Sentinel-AI</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <style>
-        .error-box {
-            text-align: center;
-            padding: 50px;
-            background: rgba(30, 41, 59, 0.6);
-            border-radius: 16px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,68,68,0.2);
-            max-width: 600px;
-            margin: 100px auto;
-        }
-        h1 { color: #ef4444; font-size: 48px; margin-bottom: 20px; }
-        p { font-size: 18px; color: #cbd5e1; margin-bottom: 30px; }
-        .home-btn {
-            background: var(--primary);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="error-box">
-            <h1>{{ error_code }}</h1>
-            <p>{{ error_message }}</p>
-            <a href="/" class="home-btn">Return to Safety</a>
+{% extends "base.html" %}
+
+{% block title %}Error {{ error_code }} | Sentinel-AI{% endblock %}
+
+{% block content %}
+<div class="bg-grid-pattern"></div>
+<div class="bg-glow-orb" style="top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.2;"></div>
+
+<div class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="glass-card max-w-lg w-full text-center space-y-8 fade-in border-red-500/30">
+        <div>
+            <h1 class="text-9xl font-bold font-heading text-red-500/20 select-none">
+                {{ error_code }}
+            </h1>
+            <div class="-mt-12">
+                <h2 class="text-3xl font-bold font-heading text-white tracking-tight">
+                    System Malfunction
+                </h2>
+                <p class="mt-4 text-lg text-gray-400 font-mono">
+                    // {{ error_message }}
+                </p>
+            </div>
+        </div>
+
+        <div class="pt-8">
+            <a href="/" class="btn-cyber px-8 py-3 rounded-lg inline-flex items-center gap-2 group">
+                <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Return to Base
+            </a>
         </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

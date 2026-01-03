@@ -1,89 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify OTP | Sentinel-AI</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <style>
-        .auth-container {
-            max-width: 400px;
-            margin: 60px auto;
-            padding: 30px;
-            background: #111827;
-            border-radius: 12px;
-            width: 90%;
-        }
+{% block title %}Verify Identity | Sentinel-AI{% endblock %}
 
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            letter-spacing: 5px;
-            text-align: center;
-            font-size: 20px;
-            border-radius: 6px;
-            border: 1px solid #374151;
-            background: #1f2937;
-            color: white;
-        }
+{% block content %}
+<div class="bg-grid-pattern"></div>
+<div class="bg-glow-orb" style="top: 20%; right: 30%;"></div>
 
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #10b981;
-            color: #fff;
-            border: none;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .logo-auth {
-            height: 50px;
-            display: block;
-            margin: 0 auto 20px;
-            border-radius: 8px;
-        }
-
-        .flash {
-            padding: 10px;
-            background: #fee2e2;
-            color: #991b1b;
-            border-radius: 6px;
-            margin-bottom: 15px;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="container">
-        <header style="text-align: center; margin-bottom: 20px; border:none;">
-            <img src="/static/logo.jpg" alt="Logo" class="logo-auth">
-            <h2 style="color: #fff; margin:0;">Verify Identity</h2>
-        </header>
-
-        <div class="auth-container">
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            {% for message in messages %}
-            <div class="flash">{{ message }}</div>
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
-
-            <p style="color:#aaa; margin-bottom:20px; text-align:center;">
-                Enter the 6-digit code sent to <b style="color:white">{{ email }}</b>
+<div class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="glass-card max-w-md w-full space-y-8 fade-in text-center">
+        <div>
+            <img class="mx-auto h-16 w-16 rounded-lg shadow-[0_0_15px_rgba(0,240,255,0.3)] mb-6" src="/static/logo.jpg"
+                alt="Logo">
+            <h2 class="mt-2 text-3xl font-bold font-heading text-white tracking-tight">
+                Identity Verification
+            </h2>
+            <p class="mt-2 text-sm text-gray-400 font-mono">
+                // MFA_CHALLENGE
             </p>
-
-            <form method="POST">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                <input type="text" name="otp" maxlength="6" placeholder="000000" required autofocus>
-                <button type="submit">Verify Code</button>
-            </form>
         </div>
-    </div>
-</body>
 
-</html>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="space-y-2 text-left">
+            {% for message in messages %}
+            <div class="bg-red-500/10 border border-red-500/50 text-red-200 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline">{{ message }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="text-gray-300">
+            Enter the 6-digit code sent to <b class="text-primary">{{ email }}</b>
+        </div>
+
+        <form class="mt-8 space-y-6" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+            <div>
+                <label for="otp" class="sr-only">OTP Code</label>
+                <input type="text" name="otp" maxlength="6" required autofocus
+                    class="input-cyber block w-full px-3 py-4 text-center text-2xl font-mono tracking-[0.5em] rounded-md placeholder-gray-600 focus:ring-primary focus:border-primary"
+                    placeholder="000000">
+            </div>
+
+            <div>
+                <button type="submit"
+                    class="btn-cyber w-full flex justify-center py-3 px-4 border border-transparent text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                        <svg class="h-5 w-5 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                            </path>
+                        </svg>
+                    </span>
+                    Verify Access
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
