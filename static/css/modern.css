@@ -213,6 +213,14 @@ h3,
     }
 }
 
+/* Mobile Menu Fix */
+#mobile-menu {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--glass-border);
+}
+
 /* Loader */
 .cyber-loader {
     width: 40px;
